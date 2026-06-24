@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KyokuTrack">
+<meta name="theme-color" content="#0d0d0f">
+<link rel="apple-touch-icon" href="assets/logo.png">
+<title>KyokuTrack — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Saira:wght@600;700;800&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#e7e5df;
+    font-family:'Manrope',system-ui,sans-serif;
+    min-height:100vh;
+  }
+  .page { width:max-content; min-width:100%; min-height:100vh; box-sizing:border-box; padding:56px 48px 72px; }
+
+  /* phone scroll area scrollbar */
+  .screen-scroll::-webkit-scrollbar { width:0; height:0; }
+
+  @keyframes playBar { from { width:0; } to { width:100%; } }
+
+  /* tweak controls */
+  .tweak-group { margin-bottom:16px; }
+  .tweak-label { font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#8a857d; margin-bottom:7px; }
+  .seg { display:flex; flex-wrap:wrap; gap:6px; }
+  .seg button {
+    font-family:'Manrope',sans-serif; font-size:12.5px; font-weight:700; cursor:pointer;
+    padding:7px 12px; border-radius:99px; border:1px solid #cfccc4; background:#f3f1ec; color:#46433e;
+    transition:all .15s ease;
+  }
+  .seg button:hover { border-color:#b3afa6; }
+  .seg button.on { background:#161616; color:#fff; border-color:#161616; }
+
+  .photo-slot { cursor:pointer; }
+  .photo-slot input { display:none; }
+  .photo-slot .ph-inner {
+    width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:6px; background:repeating-linear-gradient(135deg,#1c1c1c,#1c1c1c 9px,#181818 9px,#181818 18px);
+    color:#7a7a7a; font-size:11px; font-weight:700; text-align:center; padding:8px;
+  }
+  .photo-slot img { width:100%; height:100%; object-fit:cover; display:block; }
+
+  .pf-in {
+    width:100%; box-sizing:border-box; background:#0f0f0f; border:1px solid #242424;
+    border-radius:10px; padding:9px 11px; color:#fff; font-size:14px; font-family:inherit; outline:none;
+  }
+  .pf-in:focus { border-color:#FF9A3C; }
+  select.pf-in { -webkit-appearance:none; appearance:none; }
+
+  /* ===== Mode app plein écran : juste l'écran du téléphone ===== */
+  .app { background:#0d0d0f; }
+  .app .page { padding:0; min-width:0; width:100%; min-height:0; }
+  .app .dc-chrome { display:none !important; }            /* en-tête, titres, panneau Tweaks */
+  .app .dc-row { display:block; gap:0; }
+  .app .dc-col { width:100% !important; flex:none; }
+  .app .dc-frame {                                         /* cadre/bordure du téléphone */
+    width:100% !important; background:transparent !important;
+    border-radius:0 !important; padding:0 !important; box-shadow:none !important;
+  }
+  .app #screen {
+    width:100vw !important; height:100vh !important; height:100dvh !important;
+    border-radius:0 !important;
+  }
+  .app .dc-notch, .app .dc-statusbar { display:none !important; }     /* barre/encoche factices */
+  .app .screen-scroll { inset:max(env(safe-area-inset-top), 8px) 0 0 !important; }
+  .app #tabbar { padding-bottom:max(22px, env(safe-area-inset-bottom)) !important; }
+</style>
+</head>
+<body class="app">
+<div class="page">
+
+  <!-- header / intro -->
+  <div class="dc-chrome" style="margin-bottom:34px; max-width:720px;">
+    <div style="display:flex; align-items:center; gap:13px;">
+      <img src="assets/logo.png" alt="Kyokushin" style="height:40px; width:auto; display:block;">
+      <div style="font-family:'Saira',sans-serif; font-weight:800; font-size:28px; letter-spacing:-.5px; color:#161616;">KyokuTrack</div>
+      <div style="font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#FF6B00; border:1px solid #FF6B00; padding:3px 8px; border-radius:6px;">IFK Kyokushin</div>
+    </div>
+    <div style="margin-top:10px; font-size:14px; color:#6b6864; line-height:1.55;">Accueil centré sur le <b>suivi de forme</b> et la <b>préparation physique</b>. Touche l'anneau pour faire varier la forme ; la carte <b>« Programme en cours »</b> ouvre la fiche ceinture (vidéo + photo). <b>Tweaks :</b> accent, ambiance et intensité visuelle remodèlent l'ambiance.</div>
+  </div>
+
+  <div class="dc-row" style="display:flex; gap:56px; align-items:flex-start;">
+
+    <!-- left column: title + tweaks -->
+    <div class="dc-col" style="flex:none; width:392px;">
+      <div class="dc-chrome" style="margin-bottom:14px;">
+        <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#161616;">KyokuTrack — flux complet</div>
+        <div style="font-size:12px; color:#8a8a8a;">Accueil · fiche ceinture · bibliothèque (navigue dans le téléphone)</div>
+      </div>
+
+      <!-- phone -->
+      <div class="dc-frame" style="width:392px; background:#000; border-radius:54px; padding:11px; box-shadow:0 24px 60px -20px rgba(0,0,0,.55), 0 0 0 2px #2c2c2c;">
+        <div id="screen" style="position:relative; width:370px; height:812px; border-radius:44px; overflow:hidden;">
+          <div class="dc-notch" style="position:absolute; top:13px; left:50%; transform:translateX(-50%); width:110px; height:30px; background:#000; border-radius:18px; z-index:30;"></div>
+          <div class="dc-statusbar" style="position:absolute; top:0; left:0; right:0; height:50px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 26px 8px; font-size:13px; font-weight:700; color:#fff; z-index:20;"><span>9:41</span><span style="letter-spacing:2px;">●●● ▾ ▮</span></div>
+
+          <div class="screen-scroll" style="position:absolute; inset:50px 0 0; overflow-y:auto; overflow-x:hidden;">
+            <div id="view"></div>
+          </div>
+
+          <!-- tab bar -->
+          <div id="tabbar" style="position:absolute; bottom:0; left:0; right:0; height:78px; backdrop-filter:blur(12px); display:flex; padding:8px 14px 22px; z-index:25;"></div>
+
+          <!-- inline kata video player overlay -->
+          <div id="overlay"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- right column: tweaks panel -->
+    <div class="dc-chrome" style="flex:none; width:300px; padding-top:34px;">
+      <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#161616; margin-bottom:4px;">Tweaks</div>
+      <div style="font-size:12px; color:#8a8a8a; margin-bottom:20px;">Remodèlent l'ambiance visuelle en direct.</div>
+
+      <div class="tweak-group">
+        <div class="tweak-label">Accent</div>
+        <div class="seg" data-prop="accent"></div>
+      </div>
+      <div class="tweak-group">
+        <div class="tweak-label">Ambiance</div>
+        <div class="seg" data-prop="ambiance"></div>
+      </div>
+      <div class="tweak-group">
+        <div class="tweak-label">Intensité visuelle</div>
+        <div class="seg" data-prop="intensite"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+//============================================================
+// KyokuTrack — port of the .dc.html DCLogic component
+//============================================================
+
+const formeData = {
+  repos:      { label:'Repos',      pct:28, color:'#EF4444', rgb:'239,68,68',  a:.30, sommeil:'5.2', hrv:33, fc:61, msg:'Récupération prioritaire aujourd’hui', phys:{title:'Mobilité & étirements', sub:'Récupération active', min:20, tag:'Récup', tagColor:'#3B82F6'} },
+  moderee:    { label:'Modérée',    pct:50, color:'#FF9A3C', rgb:'255,154,60', a:.28, sommeil:'6.1', hrv:41, fc:56, msg:'Charge modérée, reste à l’écoute', phys:{title:'Circuit léger', sub:'Gainage + cardio doux', min:30, tag:'-20%', tagColor:'#FF9A3C'} },
+  bonne:      { label:'Bonne',      pct:74, color:'#22C55E', rgb:'34,197,94',  a:.26, sommeil:'7.2', hrv:58, fc:52, msg:'Bon niveau — séance standard', phys:{title:'Gainage & circuit', sub:'Squats, pompes, planche', min:40, tag:'Standard', tagColor:'#22C55E'} },
+  excellente: { label:'Excellente', pct:92, color:'#22C55E', rgb:'34,197,94',  a:.34, sommeil:'8.1', hrv:71, fc:48, msg:'Pic de forme — pousse fort, Osu !', phys:{title:'Explosivité & pliométrie', sub:'Sprints, sauts, médecine-ball', min:45, tag:'Haute', tagColor:'#FF6B00'} },
+};
+const order = ['repos','moderee','bonne','excellente'];
+
+//============================================================
+// Couche d'intégration santé (MOCK pour l'instant).
+// L'app lit la "récupération" via ce provider, jamais en direct.
+// Demain, on emballe l'app en Capacitor et on remplace SEULEMENT
+// le corps de connect()/read() — l'interface ne bouge pas :
+//   • iOS     → @perfood/capacitor-healthkit
+//               (HKQuery : restingHeartRate, heartRateVariabilitySDNN,
+//                sleepAnalysis, activeEnergyBurned, HKWorkout)
+//   • Android → plugin Health Connect (records équivalents)
+// ⚠️ Données sensibles : permission explicite, stockage LOCAL,
+//    jamais envoyées à un serveur sans consentement.
+//============================================================
+const HealthProvider = {
+  source: 'Apple Santé / Health Connect',
+  // demande d'autorisation. MOCK : accordée. Natif : requestAuthorization(...).
+  async connect(){ return true; },
+  // lecture des métriques récentes. MOCK : valeurs plausibles (athlète bien récupéré).
+  // Natif : agrège les derniers échantillons HealthKit / Health Connect.
+  async read(){
+    return { restingHR:54, hrv:62, sleepHours:7.4, activeEnergy:520, workoutsThisWeek:3, ts:Date.now() };
+  },
+};
+const clamp01 = x => Math.max(0, Math.min(1, x));
+// métriques de récupération → niveau de forme (seuils calés sur formeData)
+function formeFromMetrics(m){
+  const hrvS   = clamp01((m.hrv - 33) / (71 - 33));        // VFC : plus haut = mieux
+  const hrS    = clamp01((61 - m.restingHR) / (61 - 48));  // FC repos : plus bas = mieux
+  const sleepS = clamp01((m.sleepHours - 5.2) / (8.1 - 5.2));
+  const score  = 0.45*hrvS + 0.30*hrS + 0.25*sleepS;
+  return score < 0.28 ? 'repos' : score < 0.55 ? 'moderee' : score < 0.80 ? 'bonne' : 'excellente';
+}
+async function connectHealth(){
+  const ok = await HealthProvider.connect();
+  if(!ok) return;
+  const m = await HealthProvider.read();
+  state.health = { connected:true, metrics:m, suggestion:formeFromMetrics(m), source:HealthProvider.source };
+  render();
+}
+function disconnectHealth(){ state.health = { connected:false, metrics:null, suggestion:null, source:null }; render(); }
+function applySuggestedForme(){ if(state.health.suggestion){ state.forme = state.health.suggestion; render(); } }
+
+const belts = {
+  blanc:{c:'#E8E8E8',t:'#1a1a1a'}, rouge:{c:'#D0342C',t:'#fff'}, jaune:{c:'#F4C430',t:'#1a1a1a'}, orange:{c:'#FF6B00',t:'#160a00'},
+  bleu:{c:'#3B82F6',t:'#fff'}, vert:{c:'#3DA35D',t:'#fff'}, marron:{c:'#7A4A2B',t:'#fff'}, noir:{c:'#1A1A1A',t:'#fff'},
+};
+
+//============================================================
+// Official IFK syllabus — sourced from the user's documents
+// (IFK Syllabus + "Kihon" pictorial manual, Hanshi Steve Arneil).
+// Belt colours follow the dojo order: blanc(début)→rouge→bleu→jaune→vert→marron→noir.
+//============================================================
+const KATA = {
+  'Taikyoku Sono Ichi':{k:'太',jp:'太極 その一'},
+  'Taikyoku Sono Ni':{k:'太',jp:'太極 その二'},
+  'Taikyoku Sono San':{k:'太',jp:'太極 その三'},
+  'Pinan Sono Ichi':{k:'平',jp:'平安 その一'},
+  'Pinan Sono Ni':{k:'平',jp:'平安 その二'},
+  'Pinan Sono San':{k:'平',jp:'平安 その三'},
+  'Pinan Sono Yon':{k:'平',jp:'平安 その四'},
+  'Pinan Sono Go':{k:'平',jp:'平安 その五'},
+  'Sanchin no Kata':{k:'三',jp:'三戦の型'},
+  'Gekisai Dai':{k:'撃',jp:'撃砕大'},
+  'Yantsu':{k:'安',jp:'安三'},
+  'Tsuki no Kata':{k:'突',jp:'突きの型'},
+  'Tensho':{k:'転',jp:'転掌'},
+  'Saiha':{k:'砕',jp:'砕破'},
+  'Kanku Dai':{k:'観',jp:'観空大'},
+  'Gekisai Sho':{k:'撃',jp:'撃砕小'},
+  'Seienchin':{k:'征',jp:'征遠鎮'},
+  'Garyu':{k:'臥',jp:'臥龍'},
+  'Seipai':{k:'十',jp:'十八手'},
+  'Sushiho':{k:'五',jp:'五十四歩'},
+};
+
+// grade → belt + kata + kihon (category, kanji, technique count, base stance)
+const SYLLABUS = [
+  { kyu:'10e kyu', belt:'rouge',  kata:['Taikyoku Sono Ichi'],                      kihon:{cat:'Seiken', k:'正拳', n:10, stance:'Fudo dachi'} },
+  { kyu:'9e kyu',  belt:'rouge',  kata:['Taikyoku Sono Ni'],                        kihon:{cat:'Seiken', k:'正拳', n:7,  stance:'Sanchin dachi'} },
+  { kyu:'8e kyu',  belt:'bleu',   kata:['Taikyoku Sono San'],                       kihon:{cat:'Seiken', k:'正拳', n:10, stance:'Kiba dachi'} },
+  { kyu:'7e kyu',  belt:'bleu',   kata:['Pinan Sono Ichi'],                         kihon:{cat:'Tetsui', k:'鉄槌', n:15, stance:'Sanchin dachi'} },
+  { kyu:'6e kyu',  belt:'jaune',  kata:['Pinan Sono Ni'],                           kihon:{cat:'Uraken', k:'裏拳', n:14, stance:'Sanchin dachi'} },
+  { kyu:'5e kyu',  belt:'jaune',  kata:['Pinan Sono San'],                          kihon:{cat:'Shotei', k:'掌底', n:12, stance:'Sanchin dachi'} },
+  { kyu:'4e kyu',  belt:'vert',   kata:['Sanchin no Kata'],                         kihon:{cat:'Shuto',  k:'手刀', n:15, stance:'Sanchin dachi'} },
+  { kyu:'3e kyu',  belt:'vert',   kata:['Pinan Sono Yon','Sanchin no Kata'],        kihon:{cat:'Hiji / Empi', k:'肘', n:12, stance:'Sanchin dachi'} },
+  { kyu:'2e kyu',  belt:'marron', kata:['Pinan Sono Go','Gekisai Dai'],             kihon:{cat:'Hiraken', k:'平拳', n:14, stance:'Sanchin dachi'} },
+  { kyu:'1er kyu', belt:'marron', kata:['Yantsu','Tsuki no Kata'],                  kihon:{cat:'Ryutoken', k:'龍頭拳', n:12, stance:'Sanchin dachi'} },
+  { kyu:'1er dan', belt:'noir',   kata:['Tensho','Saiha'],                          kihon:{cat:'Haito', k:'背刀', n:14, stance:'Sanchin dachi'} },
+  { kyu:'2e dan',  belt:'noir',   kata:['Kanku Dai','Gekisai Sho','Seienchin'],     kihon:{cat:'Toho / Keiko', k:'刀峰', n:10, stance:'Sanchin dachi'} },
+];
+
+// ---- profil du pratiquant (éditable + persistant via localStorage) ----
+const BELT_FR = { blanc:'blanche', rouge:'rouge', bleu:'bleue', jaune:'jaune', vert:'verte', marron:'marron', noir:'noire' };
+const MEDALS = {
+  or:     { tag:'OR',           color:'#D4A12A', place:'1er' },
+  argent: { tag:'ARGENT',       color:'#9CA3AF', place:'2e'  },
+  bronze: { tag:'BRONZE',       color:'#B06B3A', place:'3e'  },
+  none:   { tag:'PARTICIPATION',color:'#6f6f6f', place:'•'   },
+};
+// club fixe (non éditable) — affiché sous le nom sur l'Accueil et le Profil
+const CLUB = 'Daïshin Dojo Golbey';
+const DEFAULT_PROFILE = {
+  prenom:'Kevin', club:CLUB, kyu:'2e kyu',
+  comp:{ event:'Open IFK France', date:'2026-09-20' },   // prochaine compétition (date éditable → J-XX réel)
+  stats:{ years:'3', sessions:'142', attendance:'91' },
+  palmares:[
+    { event:'Coupe régionale IFK', year:'2025', medal:'or' },
+    { event:'Open IFK France',     year:'2024', medal:'bronze' },
+    { event:'Tournoi inter-dojos', year:'2024', medal:'argent' },
+  ],
+};
+const PROFILE_KEY = 'kyokutrack.profile';
+function loadProfile(){
+  try {
+    const s = localStorage.getItem(PROFILE_KEY);
+    if(s){ const o = JSON.parse(s); return { ...DEFAULT_PROFILE, ...o, stats:{ ...DEFAULT_PROFILE.stats, ...(o.stats||{}) }, comp:{ ...DEFAULT_PROFILE.comp, ...(o.comp||{}) } }; }
+  } catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_PROFILE));
+}
+function saveProfile(){ try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch(e){} }
+let profile = loadProfile();
+
+// ---- DOJO (page sociale) — DONNÉES DE DÉMO / MAQUETTE ----
+// ⚠️ Membres fictifs, codés en dur. Aucune vraie synchro entre téléphones :
+//    pour un vrai partage, il faudra des comptes + un backend (Supabase/Firebase).
+// rang de ceinture (du moins au plus gradé) pour le classement du dojo.
+const BELT_RANK = { blanc:0, rouge:1, bleu:2, jaune:3, vert:4, marron:5, noir:6 };
+const DOJO_MEMBERS = [
+  { prenom:'Hugo',    belt:'noir',   kyu:'1er dan', pct:38, since:'7 ans' },
+  { prenom:'Léa',     belt:'marron', kyu:'1er kyu', pct:64, since:'5 ans' },
+  { prenom:'Thomas',  belt:'vert',   kyu:'3e kyu',  pct:81, since:'4 ans' },
+  { prenom:'Camille', belt:'vert',   kyu:'4e kyu',  pct:22, since:'3 ans' },
+  { prenom:'Nina',    belt:'jaune',  kyu:'5e kyu',  pct:55, since:'2 ans' },
+  { prenom:'Lucas',   belt:'bleu',   kyu:'7e kyu',  pct:40, since:'18 mois' },
+  { prenom:'Emma',    belt:'rouge',  kyu:'9e kyu',  pct:73, since:'8 mois' },
+  { prenom:'Sofia',   belt:'rouge',  kyu:'10e kyu', pct:30, since:'4 mois' },
+];
+// fil d'activité récente du dojo (démo).
+const DOJO_FEED = [
+  { who:'Léa',    belt:'marron', txt:'a validé le kata <b>Pinan Sono Go</b>',         when:"aujourd'hui" },
+  { who:'Thomas', belt:'vert',   txt:'a maîtrisé <b>Mawashi Geri Chudan</b>',         when:'hier' },
+  { who:'Emma',   belt:'rouge',  txt:'a passé sa ceinture <b>rouge</b> (9e kyu) 🎉',  when:'il y a 3 j' },
+  { who:'Hugo',   belt:'noir',   txt:'a ajouté une médaille d\'<b>argent</b> · Open IFK', when:'il y a 5 j' },
+  { who:'Nina',   belt:'jaune',  txt:'a maîtrisé <b>Shotei Uchi</b>',                 when:'il y a 1 sem.' },
+];
+
+// ---- suivi de maîtrise par technique (checklist des prochains grades, persistant) ----
+// progress = { 'grade|type|nom': true } ; coché = mouvement maîtrisé.
+const PROGRESS_KEY = 'kyokutrack.progress';
+function loadProgress(){ try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch(e){ return {}; } }
+let progress = loadProgress();
+function saveProgress(){ try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch(e){} }
+function techKey(grade, type, nom){ return grade + '|' + type + '|' + nom; }
+function toggleTech(key){ if(progress[key]) delete progress[key]; else progress[key] = true; saveProgress(); render(); }
+
+// stances (postures) référencées par le syllabus — kanji + description.
+const STANCES = {
+  'Fudo dachi':    { jp:'不動立ち', desc:'Position prête, stable et équilibrée, poids réparti.' },
+  'Sanchin dachi': { jp:'三戦立ち', desc:'Ancrage profond, bassin rentré, pieds rentrés, coudes serrés.' },
+  'Kiba dachi':    { jp:'騎馬立ち', desc:'Posture du cavalier : jambes écartées, dos droit, bassin bas.' },
+};
+// image de référence disponible (extraite du Kihon Book) par stance
+const STANCE_IMG = { 'Sanchin dachi':'assets/sanchin-dachi.png' };
+
+// ---- tweak palettes ----
+const accents = {
+  'Orange Kyokushin': { a:'#FF6B00', a2:'#FF9A3C', dk:'#2a1d12' },
+  'Rouge IFK':        { a:'#E23B2E', a2:'#FF7A5C', dk:'#2a1411' },
+  'Or':               { a:'#D4A12A', a2:'#ECC65C', dk:'#251f0f' },
+  'Indigo':           { a:'#5B6CF0', a2:'#8C97F7', dk:'#15182e' },
+};
+const ambiances = {
+  'Dojo noir':     { screen:'#0D0D0D', card:'#1A1A1A', card2:'#141414', line:'#242424', tabbar:'rgba(13,13,13,.92)' },
+  'Charbon froid': { screen:'#10141A', card:'#1A2028', card2:'#141A21', line:'#28323D', tabbar:'rgba(16,20,26,.92)' },
+  'Sépia chaud':   { screen:'#140F0A', card:'#211913', card2:'#18120C', line:'#2C2218', tabbar:'rgba(20,15,10,.92)' },
+};
+const intensites = {
+  'Sobre':      { mul:0.5, wmHero:.03, wmCard:.07 },
+  'Standard':   { mul:1.0, wmHero:.06, wmCard:.14 },
+  'Dramatique': { mul:1.8, wmHero:.13, wmCard:.24 },
+};
+
+// ---- curated demo videos, each verified embeddable via YouTube oEmbed ----
+// Attribution preserved; embedding is the sanctioned YouTube route.
+// `series:true` = the clip covers the whole Taikyoku/Pinan set, not just this kata.
+const VIDEOS = {
+  'Taikyoku Sono Ichi': { id:'ZtCpQJLvtYo', author:'MP Elite Fitness' },
+  'Taikyoku Sono Ni':   { id:'KOEgRrWZh48', author:'karate35', series:true },
+  'Taikyoku Sono San':  { id:'KOEgRrWZh48', author:'karate35', series:true },
+  'Pinan Sono Ichi':    { id:'Rm5yzVx7VaQ', author:'Nynäshamn Kyokushin' },
+  'Pinan Sono Ni':      { id:'8usgAC_1JnU', author:'MP Elite Fitness' },
+  'Pinan Sono San':     { id:'Rock1v3ywcM', author:'karate35', series:true },
+  'Pinan Sono Yon':     { id:'u96pMUGujU0', author:'Kyokushin Intl · KIMAA' },
+  'Pinan Sono Go':      { id:'Rock1v3ywcM', author:'karate35', series:true },
+  'Gekisai Dai':        { id:'Ol6_crlE5C0', author:'YCK Karate', title:'Gekisai Dai — kata complet' },
+  'Gekisai Sho':        { id:'vNknPmOmBJo', author:'Kyokushin Cape Town' },
+  'Yantsu':             { id:'3d-veA42V64', author:'Kyokushin Karate England' },
+  'Saiha':              { id:'d7BCE4VXgCk', author:'Zen Budo Mizukagami Dojo' },
+  'Kanku Dai':          { id:'5Hgi2vi9EbA', author:'Ultimate Karate' },
+  'Seipai':             { id:'dSPFdh60lno', author:'Radek Scuri', series:true },
+  'Sushiho':            { id:'dSPFdh60lno', author:'Radek Scuri', series:true },
+};
+
+// ---- kihon illustration plates, extracted from the IFK Kihon Book (S. Arneil) ----
+// one plate per grade (some grades span 2 pages). Used as posture reference.
+const KIHON_PLATES = {
+  '10e kyu': ['assets/kihon/10kyu.png'],
+  '9e kyu':  ['assets/kihon/9kyu.png'],
+  '8e kyu':  ['assets/kihon/8kyu.png'],
+  '7e kyu':  ['assets/kihon/7kyu.png'],
+  '6e kyu':  ['assets/kihon/6kyu-1.png','assets/kihon/6kyu-2.png'],
+  '5e kyu':  ['assets/kihon/5kyu-1.png','assets/kihon/5kyu-2.png'],
+  '4e kyu':  ['assets/kihon/4kyu-1.png','assets/kihon/4kyu-2.png'],
+  '3e kyu':  ['assets/kihon/3kyu.png'],
+  '2e kyu':  ['assets/kihon/2kyu.png'],
+  '1er kyu': ['assets/kihon/1kyu.png'],
+  '1er dan': ['assets/kihon/1dan.png'],
+  '2e dan':  ['assets/kihon/2dan.png'],
+};
+
+// ---- kihon détaillé par grade : chaque mouvement listé sous les figures du Kihon Book ----
+// (relevé image par image depuis les planches ; sert d'items cochables sur la page progression)
+const KIHON_DETAIL = {
+  '10e kyu': ['Seiken Morote Tsuki Jodan','Seiken Morote Tsuki Chudan','Seiken Morote Tsuki Gedan','Seiken Oi Tsuki Jodan','Seiken Oi Tsuki Chudan','Seiken Oi Tsuki Gedan','Seiken Jodan Uke','Seiken Mae Gedan Barai','Hiza Ganmen Geri','Kin Geri'],
+  '9e kyu': ['Seiken Jodan Ago Uchi','Seiken Gyaku Tsuki Jodan','Seiken Gyaku Tsuki Chudan','Seiken Gyaku Tsuki Gedan','Seiken Chudan Uchi Uke','Seiken Chudan Soto Uke','Chudan Mae Geri Chusoku'],
+  '8e kyu': ['Tate Tsuki Jodan','Tate Tsuki Chudan','Tate Tsuki Gedan','Shita Tsuki','Jun Tsuki Jodan (Kiba dachi)','Jun Tsuki Chudan','Jun Tsuki Gedan','Seiken Morote Chudan Uchi Uke','Seiken Chudan Uchi Uke Gedan Barai','Jodan Mae Geri Chusoku'],
+  '7e kyu': ['Tettsui Oroshi Ganmen Uchi','Tettsui Komekami','Tettsui Hizo Uchi','Tettsui Mae Yoko Uchi Jodan','Tettsui Mae Yoko Uchi Chudan','Tettsui Mae Yoko Uchi Gedan','Tettsui Yoko Uchi Jodan (Kiba dachi)','Tettsui Yoko Uchi Chudan','Tettsui Yoko Uchi Gedan','Seiken Mawashi Gedan Barai','Shuto Mawashi Uke (Kokutsu dachi)','Mae Chusoku Ke Age','Teisoku Mawashi Soto Ke Age','Haisoku Mawashi Uchi Ke Age','Sokuto Yoko Ke Age'],
+  '6e kyu': ['Uraken Ganmen Uchi','Uraken Sayu Ganmen Uchi (Kiba dachi)','Uraken Hizo Uchi','Uraken Oroshi Ganmen Uchi','Uraken Mawashi Uchi','Nihon Nukite (Me Tsuki)','Yonhon Nukite Jodan','Yonhon Nukite Chudan','Seiken Juji Uke Jodan','Seiken Juji Uke Gedan','Mawashi Gedan Geri Haisoku','Mawashi Gedan Geri Chusoku','Kansetsu Geri (Sokuto)','Chudan Yoko Geri (Sokuto)'],
+  '5e kyu': ['Shotei Uchi Jodan','Shotei Uchi Chudan','Shotei Uchi Gedan','Jodan Hiji Ate','Shotei Uke Jodan','Shotei Uke Chudan','Shotei Uke Gedan','Chudan Mawashi Geri Haisoku','Chudan Mawashi Geri Chusoku','Ushiro Geri Chudan (méthode 1 — step across)','Ushiro Geri Chudan (méthode 2 — spin)','Ushiro Geri Chudan (méthode 3 — Kake dachi)'],
+  '4e kyu': ['Shuto Sakotsu Uchi','Shuto Yoko Ganmen Uchi','Shuto Uchi Komi','Shuto Hizo Uchi','Shuto Jodan Uchi Uchi','Shuto Jodan Uchi Uke','Shuto Jodan Uke','Shuto Chudan Uchi Uke','Shuto Chudan Soto Uke','Shuto Mae Gedan Barai','Shuto Mawashi Uke (Sanchin dachi)','Jodan Yoko Geri','Jodan Mawashi Geri Chusoku','Jodan Mawashi Geri Haisoku','Jodan Ushiro Geri'],
+  '3e kyu': ['Chudan Hiji Ate','Chudan Mae Hiji Ate','Age Hiji Ate Jodan','Age Hiji Ate Chudan','Ushiro Hiji Ate','Oroshi Hiji Ate','Shuto Juji Uke Jodan','Shuto Juji Uke Gedan','Mae Kakato Geri Jodan','Mae Kakato Geri Chudan','Mae Kakato Geri Gedan','Jodan Ago Geri'],
+  '2e kyu': ['Hiraken Tsuki Jodan','Hiraken Tsuki Chudan','Hiraken Oroshi Uchi','Hiraken Mawashi Uchi','Haisho Jodan','Haisho Chudan','Ago Jodan Tsuki','Koken Uke Jodan','Koken Uke Chudan','Koken Uke Gedan','Tobi Nidan Geri','Tobi Mae Geri 1 (jambe avant — hauteur)','Tobi Mae Geri 2 (jambe arrière — distance)','Tobi Mae Geri 3 (jambe arrière)'],
+  '1er kyu': ['Ryutoken Tsuki Jodan','Ryutoken Tsuki Chudan','Nakayubi Ippon Ken Jodan','Nakayubi Ippon Ken Chudan','Oyayubi Ippon Ken Jodan','Oyayubi Ippon Ken Chudan','Kake Uke Jodan','Chudan Haito Uchi Uke','Jodan Uchi Haisoku Geri','Oroshi Uchi Kakato Geri (Fudo dachi)','Oroshi Soto Kakato Geri (Fudo dachi)','Tobi Yoko Geri'],
+  '1er dan': ['Morote Haito Uchi Jodan','Morote Haito Uchi Chudan','Haito Uchi Jodan','Haito Uchi Chudan','Haito Uchi Gedan','Morote Kake Uke Jodan','Osae Uke','Kake Geri Kakato Jodan','Kake Geri Kakato Chudan','Kake Geri Chusoku Jodan','Kake Geri Chusoku Chudan','Ushiro Mawashi Geri Jodan','Ushiro Mawashi Geri Chudan','Ushiro Mawashi Geri Gedan'],
+  '2e dan': ['Toho Uchi Jodan','Keiko Uchi','Ippon Nukite','Hiji Uke Chudan (Kiba dachi)','Shotei Morote Gedan Uke','Shuto Morote Gedan Uke','Tobi Ushiro Geri','Tobi Ushiro Mawashi Geri','Tobi Mawashi Geri (jambe avant)','Age Kakato Ushiro Geri'],
+};
+
+// déduit le kanji d'un mouvement kihon depuis son arme/action principale.
+// ordre = du plus spécifique au plus générique ; 1re correspondance gagne.
+// priorité : main/arme > frappe (tsuki) > coup de pied (geri) > blocage (uke).
+const KIHON_LEX = [
+  ['Nakayubi Ippon Ken','中指一本拳'], ['Oyayubi Ippon Ken','親指一本拳'],
+  ['Nihon Nukite','二本貫手'], ['Yonhon Nukite','四本貫手'], ['Ippon Nukite','一本貫手'], ['Nukite','貫手'],
+  ['Ryutoken','龍頭拳'], ['Tettsui','鉄槌'], ['Shotei','掌底'], ['Hiraken','平拳'],
+  ['Haisho','背掌'], ['Haito','背刀'], ['Shuto','手刀'], ['Seiken','正拳'], ['Uraken','裏拳'],
+  ['Koken','弧拳'], ['Toho','刀峰'], ['Keiko','鶏口'], ['Hiji','肘'], ['Empi','肘'],
+  ['Tate Tsuki','縦突き'], ['Shita Tsuki','下突き'], ['Jun Tsuki','順突き'], ['Oi Tsuki','追い突き'], ['Gyaku Tsuki','逆突き'], ['Tsuki','突き'],
+  ['Keage','蹴上げ'], ['Ke Age','蹴上げ'], ['Geri','蹴り'],
+  ['Gedan Barai','下段払い'], ['Barai','払い'], ['Uke','受け'],
+];
+function kihonKanji(name){
+  const n = name.toLowerCase();
+  for(const [tok,k] of KIHON_LEX){ if(n.indexOf(tok.toLowerCase())>=0) return k; }
+  return '';
+}
+
+// icônes Kata = poing, Kihon = pied (silhouettes pleines, suivent `currentColor`).
+// commencent par '<' → le moteur d'icônes les rend en brut au lieu d'un <path>.
+const ICON_FIST = '<path d="M7 10.5V9a1.3 1.3 0 0 1 2.6 0M9.6 9.5V7.6a1.3 1.3 0 0 1 2.6 0V10M12.2 10V8.2a1.3 1.3 0 0 1 2.6 0V10.5"/><path d="M7 10.5a1.5 1.5 0 0 0-3 0V14a6 6 0 0 0 6 6h2a6 6 0 0 0 6-6v-3.5a1.3 1.3 0 0 0-2.6 0"/>';
+const ICON_FOOT = '<g fill="currentColor" stroke="none"><path d="M11.5 21c-2.7 0-4-2.1-4-5 0-3 1.4-5.2 4-5.2s4 2.2 4 5.2c0 2.9-1.3 5-4 5z"/><ellipse cx="8.4" cy="8.8" rx="1.1" ry="1.45"/><ellipse cx="11" cy="7.2" rx="1.2" ry="1.6"/><ellipse cx="13.6" cy="7.8" rx="1.05" ry="1.4"/><ellipse cx="15.4" cy="9.6" rx="0.9" ry="1.2"/></g>';
+// rend une icône : SVG brut si elle commence par '<', sinon un simple <path d="…">
+function iconSVG(icon, color, size){
+  const inner = (icon && icon[0]==='<') ? icon : `<path d="${icon}"></path>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" style="color:${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+}
+
+// ---- glossaire : vocabulaire japonais du karaté Kyokushin → français ----
+// jp = kanji (optionnel), rj = romaji, fr = traduction/sens.
+const GLOSSARY = [
+  { title:'Nombres (1 à 10)', items:[
+    {jp:'一', rj:'Ichi',   fr:'Un (1)'},
+    {jp:'二', rj:'Ni',     fr:'Deux (2)'},
+    {jp:'三', rj:'San',    fr:'Trois (3)'},
+    {jp:'四', rj:'Shi / Yon', fr:'Quatre (4)'},
+    {jp:'五', rj:'Go',     fr:'Cinq (5)'},
+    {jp:'六', rj:'Roku',   fr:'Six (6)'},
+    {jp:'七', rj:'Shichi / Nana', fr:'Sept (7)'},
+    {jp:'八', rj:'Hachi',  fr:'Huit (8)'},
+    {jp:'九', rj:'Ku / Kyu', fr:'Neuf (9)'},
+    {jp:'十', rj:'Ju',     fr:'Dix (10)'},
+  ]},
+  { title:'Étiquette & commandements', items:[
+    {jp:'押忍', rj:'Osu',          fr:'Salut & esprit de persévérance ; « oui / compris »'},
+    {jp:'礼',   rj:'Rei',          fr:'Salut, s’incliner'},
+    {jp:'先生', rj:'Sensei',       fr:'Professeur, maître'},
+    {jp:'先輩', rj:'Sempai',       fr:'Élève le plus ancien / gradé'},
+    {jp:'道場', rj:'Dojo',         fr:'Salle d’entraînement'},
+    {jp:'空手', rj:'Karate',       fr:'« Main vide »'},
+    {jp:'帯',   rj:'Obi',          fr:'Ceinture'},
+    {jp:'級',   rj:'Kyu',          fr:'Grade avant la ceinture noire'},
+    {jp:'段',   rj:'Dan',          fr:'Grade de ceinture noire'},
+    {jp:'黙想', rj:'Mokuso',       fr:'Méditation (yeux fermés)'},
+    {jp:'正座', rj:'Seiza',        fr:'Position assise à genoux'},
+    {jp:'気合', rj:'Kiai',         fr:'Cri d’énergie'},
+    {jp:'用意', rj:'Yoi',          fr:'Prêt (position de préparation)'},
+    {jp:'構え', rj:'Kamae',        fr:'En garde'},
+    {jp:'始め', rj:'Hajime',       fr:'Commencez'},
+    {jp:'止め', rj:'Yame',         fr:'Arrêtez / stop'},
+    {jp:'直れ', rj:'Naore',        fr:'Revenez à la position de départ'},
+    {jp:'休め', rj:'Yasume',       fr:'Repos'},
+    {jp:'回って', rj:'Mawatte',    fr:'Tournez (demi-tour)'},
+    {jp:'反対', rj:'Hantai',       fr:'Changez de côté / inversez'},
+  ]},
+  { title:'Niveaux (cibles)', items:[
+    {jp:'上段', rj:'Jodan',  fr:'Niveau haut (tête, visage)'},
+    {jp:'中段', rj:'Chudan', fr:'Niveau moyen (torse)'},
+    {jp:'下段', rj:'Gedan',  fr:'Niveau bas (abdomen, jambes)'},
+  ]},
+  { title:'Directions & termes généraux', items:[
+    {jp:'前',  rj:'Mae',     fr:'Avant'},
+    {jp:'後ろ', rj:'Ushiro', fr:'Arrière'},
+    {jp:'横',  rj:'Yoko',    fr:'Côté, latéral'},
+    {jp:'右',  rj:'Migi',    fr:'Droite'},
+    {jp:'左',  rj:'Hidari',  fr:'Gauche'},
+    {jp:'回し', rj:'Mawashi', fr:'Circulaire'},
+    {jp:'上げ', rj:'Age',    fr:'Montant (vers le haut)'},
+    {jp:'下ろし', rj:'Oroshi', fr:'Descendant'},
+    {jp:'外',  rj:'Soto',    fr:'Extérieur'},
+    {jp:'内',  rj:'Uchi',    fr:'Intérieur'},
+    {jp:'双手', rj:'Morote', fr:'À deux mains'},
+  ]},
+  { title:'Positions — Dachi', items:[
+    {jp:'立ち',   rj:'Dachi',           fr:'Position, posture'},
+    {jp:'不動立ち', rj:'Fudo dachi',     fr:'Position de garde naturelle'},
+    {jp:'三戦立ち', rj:'Sanchin dachi',  fr:'Position du sablier (pieds rentrés)'},
+    {jp:'前屈立ち', rj:'Zenkutsu dachi', fr:'Position avancée (fente avant)'},
+    {jp:'後屈立ち', rj:'Kokutsu dachi',  fr:'Position arrière'},
+    {jp:'騎馬立ち', rj:'Kiba dachi',     fr:'Position du cavalier'},
+    {jp:'猫足立ち', rj:'Neko ashi dachi', fr:'Position du chat'},
+    {jp:'結び立ち', rj:'Musubi dachi',   fr:'Talons joints, pieds ouverts'},
+    {jp:'閉足立ち', rj:'Heisoku dachi',  fr:'Pieds joints'},
+    {jp:'掛け立ち', rj:'Kake dachi',     fr:'Position croisée'},
+  ]},
+  { title:'Frappes — Tsuki / Uchi', items:[
+    {jp:'突き', rj:'Tsuki',      fr:'Coup de poing direct'},
+    {jp:'打ち', rj:'Uchi',       fr:'Frappe (souvent circulaire)'},
+    {jp:'追い突き', rj:'Oi tsuki', fr:'Coup de poing en avançant'},
+    {jp:'逆突き', rj:'Gyaku tsuki', fr:'Coup de poing inversé (jambe opposée)'},
+    {jp:'正拳', rj:'Seiken',     fr:'Poing avant (2 premières phalanges)'},
+    {jp:'裏拳', rj:'Uraken',     fr:'Revers du poing'},
+    {jp:'鉄槌', rj:'Tettsui',    fr:'Poing marteau'},
+    {jp:'手刀', rj:'Shuto',      fr:'Tranchant de la main (sabre)'},
+    {jp:'背刀', rj:'Haito',      fr:'Tranchant interne de la main'},
+    {jp:'掌底', rj:'Shotei',     fr:'Talon de la paume'},
+    {jp:'平拳', rj:'Hiraken',    fr:'Poing plat (phalanges)'},
+    {jp:'貫手', rj:'Nukite',     fr:'Main lance (bout des doigts)'},
+    {jp:'肘',   rj:'Hiji / Empi', fr:'Coude'},
+  ]},
+  { title:'Blocages — Uke', items:[
+    {jp:'受け', rj:'Uke',         fr:'Blocage, parade'},
+    {jp:'上段受け', rj:'Jodan uke', fr:'Blocage haut'},
+    {jp:'内受け', rj:'Uchi uke',   fr:'Blocage de l’intérieur vers l’extérieur'},
+    {jp:'外受け', rj:'Soto uke',   fr:'Blocage de l’extérieur vers l’intérieur'},
+    {jp:'下段払い', rj:'Gedan barai', fr:'Balayage bas'},
+    {jp:'手刀受け', rj:'Shuto uke', fr:'Blocage sabre de main'},
+    {jp:'十字受け', rj:'Juji uke',  fr:'Blocage en croix'},
+    {jp:'回し受け', rj:'Mawashi uke', fr:'Blocage circulaire'},
+  ]},
+  { title:'Coups de pied — Geri', items:[
+    {jp:'蹴り', rj:'Geri',        fr:'Coup de pied'},
+    {jp:'前蹴り', rj:'Mae geri',  fr:'Coup de pied de face'},
+    {jp:'回し蹴り', rj:'Mawashi geri', fr:'Coup de pied circulaire'},
+    {jp:'横蹴り', rj:'Yoko geri', fr:'Coup de pied latéral'},
+    {jp:'後ろ蹴り', rj:'Ushiro geri', fr:'Coup de pied arrière'},
+    {jp:'膝蹴り', rj:'Hiza geri', fr:'Coup de genou'},
+    {jp:'金蹴り', rj:'Kin geri',  fr:'Coup de pied à l’aine'},
+    {jp:'関節蹴り', rj:'Kansetsu geri', fr:'Coup de pied dans l’articulation (genou)'},
+    {jp:'蹴上げ', rj:'Keage',     fr:'Coup de pied fouetté (montant)'},
+    {jp:'蹴込み', rj:'Kekomi',    fr:'Coup de pied pénétrant'},
+  ]},
+  { title:'Surfaces de frappe (pied)', items:[
+    {jp:'中足', rj:'Chusoku',  fr:'Plante du pied (sous les orteils)'},
+    {jp:'背足', rj:'Haisoku',  fr:'Cou-de-pied'},
+    {jp:'足刀', rj:'Sokuto',   fr:'Tranchant du pied'},
+    {jp:'踵',   rj:'Kakato',   fr:'Talon'},
+  ]},
+];
+
+// open a targeted search on YouTube — never a hard-coded id, so never breaks
+function ytSearch(q){
+  window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent('Kyokushin IFK ' + q), '_blank', 'noopener');
+}
+function loadVideo(){ state.videoLoaded = true; render(); }
+function openKataVideo(name){ state.videoModal = name; render(); }
+function closeVideo(){ state.videoModal = null; render(); }
+function openKihon(kyu){ state.kihonModal = kyu; render(); }
+function closeKihon(){ state.kihonModal = null; render(); }
+
+// ---- édition du profil ----
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function openEditProfile(){ state.edit = JSON.parse(JSON.stringify(profile)); render(); }
+function cancelEditProfile(){ state.edit = null; render(); }
+function saveEditProfile(){ profile = state.edit; state.edit = null; state.videoLoaded = false; saveProfile(); render(); }
+function addPalmares(){ state.edit.palmares.push({ event:'', year:'', medal:'or' }); renderEditOverlay(); }
+function removePalmares(i){ state.edit.palmares.splice(i,1); renderEditOverlay(); }
+function renderEditOverlay(){ document.getElementById('overlay').innerHTML = editProfileHTML(); }
+
+// ---- state + props ----
+const state = { forme:'bonne', view:'home', physDone:false, playing:false, libTab:'kata', videoLoaded:false, videoModal:null, kihonModal:null, edit:null, session:null, sessionModal:false, player:null, health:{ connected:false, metrics:null, suggestion:null, source:null } };
+const props = { accent:'Or', ambiance:'Dojo noir', intensite:'Dramatique' };
+
+// photo perso déposée par l'utilisateur (prioritaire sur l'illustration de réf.).
+let userPhoto = null;
+
+//============================================================
+// Générateur de séance — circuit training au POIDS DU CORPS,
+// 15–20 min, adapté à l'état de forme (repos→excellente).
+// Exercices sans matériel ; saveur Kyokushin (kihon à l'ombre).
+// cat = catégorie (1 exo tiré par catégorie pour un circuit complet).
+// min = niveau de forme minimum requis (0 repos … 3 excellente).
+//============================================================
+const EXOS = {
+  jambes: [
+    { n:'Squats',                 min:0, g:'12–15 reps' },
+    { n:'Fentes alternées',       min:0, g:'10/jambe' },
+    { n:'Squats sumo',            min:0, g:'15 reps' },
+    { n:'Chaise contre le mur',   min:0, g:'tiens la position' },
+    { n:'Squats sautés',          min:3, g:'explosif' },
+    { n:'Fentes sautées',         min:3, g:'alternées, explosif' },
+  ],
+  haut: [
+    { n:'Pompes sur genoux',      min:0, g:'10–12 reps' },
+    { n:'Pompes',                 min:1, g:'autant que possible' },
+    { n:'Dips sur chaise',        min:1, g:'12 reps' },
+    { n:'Pompes déclinées',       min:3, g:'pieds surélevés' },
+    { n:'Pompes diamant',         min:3, g:'serrées' },
+  ],
+  gainage: [
+    { n:'Planche',                min:0, g:'tiens gainé' },
+    { n:'Gainage latéral',        min:0, g:'alterne les côtés' },
+    { n:'Hollow hold',            min:1, g:'bas du dos au sol' },
+    { n:'Mountain climbers',      min:1, g:'rythme soutenu' },
+    { n:'Relevés de jambes',      min:1, g:'contrôlés' },
+  ],
+  cardio: [
+    { n:'Talons-fesses',          min:0, g:'rythme léger' },
+    { n:'Montées de genoux',      min:1, g:'gainé, rapide' },
+    { n:'Jumping jacks',          min:1, g:'ample' },
+    { n:'Pas chassés',            min:1, g:'change de sens' },
+    { n:'Burpees sans saut',      min:2, g:'enchaîné' },
+    { n:'Burpees',                min:3, g:'avec saut' },
+  ],
+  kyokushin: [
+    { n:'Seiken tsuki en kiba dachi', min:0, g:'coups de poing, position basse' },
+    { n:'Shadow — enchaînements tsuki', min:1, g:'vitesse + garde' },
+    { n:'Mae geri à l\'ombre',    min:1, g:'alterne les jambes' },
+    { n:'Mawashi geri à l\'ombre',min:2, g:'hanche, équilibre' },
+    { n:'Sprawl (défense kumite)',min:2, g:'descente explosive' },
+  ],
+};
+// paramètres du circuit selon la forme du jour.
+// rounds × 5 exos × (work+rest) + 5' d'échauffement/retour au calme → total visé 15–20 min.
+const SESSION_PARAMS = {
+  repos:      { rounds:2, work:30, rest:30, tag:'Récup',    tagColor:'#3B82F6', note:'Récupération active : reste fluide, respire, zéro forcing.' },   // ~15 min
+  moderee:    { rounds:3, work:30, rest:20, tag:'Modérée',  tagColor:'#FF9A3C', note:'Tempo maîtrisé, technique propre avant la vitesse.' },           // ~18 min
+  bonne:      { rounds:3, work:35, rest:20, tag:'Standard', tagColor:'#22C55E', note:'Engage-toi pleinement en gardant une forme nette.' },           // ~19 min
+  excellente: { rounds:4, work:30, rest:12, tag:'Haute',    tagColor:'#FF6B00', note:'Jour de pic : intervalles courts et explosifs. Osu !' },        // ~19 min
+};
+const CAT_LABEL = { jambes:'Jambes', haut:'Haut du corps', gainage:'Gainage', cardio:'Cardio', kyokushin:'Kyokushin' };
+const SESSION_WARMUP  = ['Rotations articulaires (cou→chevilles)','Talons-fesses + montées de genoux','10 squats lents','Quelques mae geri souples'];
+const SESSION_COOLDOWN = ['Étirements jambes (ischios, quadris, mollets)','Étirement épaules & dos','Respiration profonde, retour au calme'];
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+
+// construit une séance neuve à partir de la forme courante.
+function buildSession(forme){
+  const lvl = order.indexOf(forme);                 // 0..3
+  const P = SESSION_PARAMS[forme] || SESSION_PARAMS.bonne;
+  const order2 = ['jambes','haut','gainage','cardio','kyokushin'];
+  const circuit = order2.map(cat=>{
+    const ok = EXOS[cat].filter(e=>e.min<=lvl);
+    const e = pick(ok.length?ok:EXOS[cat]);
+    return { cat, n:e.n, g:e.g };
+  });
+  const circuitSec = P.rounds * circuit.length * (P.work + P.rest);
+  const totalMin = Math.round((180 + circuitSec + 120) / 60);   // échauffement 3' + circuit + retour au calme 2'
+  return { forme, tag:P.tag, tagColor:P.tagColor, note:P.note, rounds:P.rounds, work:P.work, rest:P.rest,
+           circuit, warmup:SESSION_WARMUP, cooldown:SESSION_COOLDOWN, totalMin };
+}
+function generateSession(){ state.session = buildSession(state.forme); state.sessionModal = true; render(); }
+function regenSession(){ state.session = buildSession(state.forme); render(); }
+function openSession(){ if(!state.session) state.session = buildSession(state.forme); state.sessionModal = true; render(); }
+function closeSession(){ state.sessionModal = false; render(); }
+
+//============================================================
+// Lecteur de séance guidé (chrono) : échauffement → circuit
+// (effort/repos par exercice, tour par tour) → retour au calme.
+// Réglable en direct : ±10 s, passer/précédent, pause.
+//============================================================
+let playerTimer = null, audioCtx = null;
+function fmtTime(s){ s=Math.max(0,s|0); const m=Math.floor(s/60), ss=s%60; return m+':'+String(ss).padStart(2,'0'); }
+// construit la liste à plat des étapes chronométrées d'une séance.
+function buildSteps(s){
+  const steps=[{ kind:'warmup', name:'Échauffement', sub:s.warmup.join(' · '), seconds:180 }];
+  for(let r=1;r<=s.rounds;r++){
+    s.circuit.forEach((e,i)=>{
+      steps.push({ kind:'work', name:e.n, sub:(CAT_LABEL[e.cat]||'')+' · '+e.g, seconds:s.work, round:r, rounds:s.rounds, exo:i+1, exoN:s.circuit.length });
+      const isLast = (r===s.rounds && i===s.circuit.length-1);
+      if(!isLast) steps.push({ kind:'rest', name:'Repos', sub:'', seconds:s.rest, round:r, rounds:s.rounds });
+    });
+  }
+  steps.push({ kind:'cooldown', name:'Retour au calme', sub:s.cooldown.join(' · '), seconds:120 });
+  return steps;
+}
+function startSession(){
+  if(!state.session) return;
+  try { audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); } catch(e){}
+  const steps = buildSteps(state.session);
+  state.player = { steps, idx:0, remaining:steps[0].seconds, running:true, done:false };
+  state.sessionModal = false;
+  startTick();
+  render();
+}
+function startTick(){
+  clearInterval(playerTimer);
+  playerTimer = setInterval(()=>{
+    const p=state.player; if(!p || !p.running || p.done) return;
+    p.remaining--;
+    if(p.remaining<=0) nextStep(); else updatePlayerTime();
+  }, 1000);
+}
+function updatePlayerTime(){
+  const p=state.player; if(!p) return;
+  const st=p.steps[p.idx];
+  const t=document.getElementById('pl-time'); if(t) t.textContent=fmtTime(p.remaining);
+  const ring=document.getElementById('pl-ring');
+  if(ring){ const col=ring.dataset.col||'#FF6B00'; const pct=100*(st.seconds-p.remaining)/st.seconds; ring.style.background=`conic-gradient(${col} ${(pct*3.6).toFixed(1)}deg, var(--line,#242424) 0deg)`; }
+}
+function beep(){
+  try{ navigator.vibrate && navigator.vibrate(70); }catch(e){}
+  try{ if(!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination); o.type='sine'; o.frequency.value=880;
+    g.gain.setValueAtTime(0.001,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.18,audioCtx.currentTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.18); o.start(); o.stop(audioCtx.currentTime+0.2);
+  }catch(e){}
+}
+function nextStep(){
+  const p=state.player; if(!p) return;
+  if(p.idx>=p.steps.length-1){ p.done=true; p.running=false; clearInterval(playerTimer); try{navigator.vibrate&&navigator.vibrate([90,60,90]);}catch(e){} render(); return; }
+  beep(); p.idx++; p.remaining=p.steps[p.idx].seconds; render();
+}
+function prevStep(){ const p=state.player; if(p && p.idx>0){ p.idx--; p.remaining=p.steps[p.idx].seconds; render(); } }
+function togglePlayer(){ const p=state.player; if(p){ p.running=!p.running; render(); } }
+function adjustStep(delta){ const p=state.player; if(!p) return; const st=p.steps[p.idx]; st.seconds=Math.max(5,st.seconds+delta); p.remaining=Math.max(1,p.remaining+delta); render(); }
+function quitPlayer(){ clearInterval(playerTimer); state.player=null; render(); }
+
+// jours restants jusqu'à une date 'YYYY-MM-DD' (null si vide/invalide).
+function daysUntil(dateStr){
+  if(!dateStr) return null;
+  const d = new Date(dateStr + 'T00:00:00');
+  if(isNaN(d.getTime())) return null;
+  const t = new Date(); t.setHours(0,0,0,0);
+  return Math.round((d - t) / 86400000);
+}
+
+// ---- handlers ----
+function cycleForme(){ const i=order.indexOf(state.forme); state.forme=order[(i+1)%4]; render(); }
+function togglePhys(){ state.physDone=!state.physDone; render(); }
+function togglePlay(){ state.playing=!state.playing; render(); }
+function goHome(){ state.view='home'; state.videoModal=null; state.kihonModal=null; render(); }
+function goBelt(){ state.view='belt'; state.videoLoaded=false; state.videoModal=null; state.kihonModal=null; render(); }
+function goLib(tab){ state.view='lib'; state.libTab=tab||'kata'; state.videoModal=null; state.kihonModal=null; render(); }
+function goProfile(){ state.view='profile'; state.videoModal=null; state.kihonModal=null; render(); }
+function goGlos(){ state.view='glos'; state.videoModal=null; state.kihonModal=null; render(); }
+function goDojo(){ state.view='dojo'; state.videoModal=null; state.kihonModal=null; render(); }
+
+// ---- derived values (port of renderVals) ----
+function renderVals(){
+  const f=formeData[state.forme];
+  const v=state.view;
+  const AC=accents[props.accent] || accents['Orange Kyokushin'];
+  const AM=ambiances[props.ambiance] || ambiances['Dojo noir'];
+  const IN=intensites[props.intensite] || intensites['Standard'];
+
+  const themeVars = `--accent:${AC.a};--accent2:${AC.a2};--accentDk:${AC.dk};--screen:${AM.screen};--card:${AM.card};--card2:${AM.card2};--line:${AM.line};--tabbar:${AM.tabbar};--wmHero:${IN.wmHero};--wmCard:${IN.wmCard};`;
+
+  // health-derived display: when connected, hero metrics are LIVE (from the provider)
+  const H = state.health;
+  const sommeil = (H.connected && H.metrics) ? H.metrics.sleepHours.toFixed(1) : f.sommeil;
+  const hrv     = (H.connected && H.metrics) ? H.metrics.hrv : f.hrv;
+  const fc      = (H.connected && H.metrics) ? H.metrics.restingHR : f.fc;
+  const sug     = H.suggestion ? formeData[H.suggestion] : null;
+  const sugDiffers = H.connected && H.suggestion && H.suggestion !== state.forme;
+
+  const glowA = Math.min(.9, f.a * IN.mul).toFixed(2);
+  const formeGlow = `rgba(${f.rgb},${glowA})`;
+  const formeRingBg = `conic-gradient(${f.color} ${(f.pct*3.6).toFixed(1)}deg, var(--line,#242424) 0deg)`;
+  const ph=f.phys, pd=state.physDone;
+
+  // ---- compte à rebours compétition (date éditable dans le profil) ----
+  const compDays=daysUntil(profile.comp && profile.comp.date);
+  const compEvent=(profile.comp && profile.comp.event) ? profile.comp.event : 'Prochaine compétition';
+  const hasComp=compDays!==null;
+  let compLabel, activePhase;
+  if(!hasComp){ compLabel='—'; activePhase=0; }
+  else if(compDays<0){ compLabel='Passée'; activePhase=4; }
+  else if(compDays===0){ compLabel='Jour J'; activePhase=4; }
+  else { compLabel='J-'+compDays;
+    activePhase = compDays>70?0 : compDays>42?1 : compDays>20?2 : compDays>7?3 : 4; }
+  const phaseFull=['Phase de base','Construction','Intensification','Affûtage','Compétition'];
+  const compWeeks = (hasComp && compDays>0) ? Math.ceil(compDays/7) : 0;
+  const phaseLabel = !hasComp ? 'Définis ta date'
+    : (compDays<0 ? 'Compétition passée'
+    : `${phaseFull[activePhase]}${compWeeks?` · ${compWeeks} sem.`:''}`);
+
+  const phaseNames=['Base','Constr.','Intens.','Affût.','Compét.'];
+  const phaseFlex=[25,35,25,10,5];
+  const phases=phaseNames.map((n,i)=>({
+    name:n, flex:phaseFlex[i],
+    bg:i<activePhase?'var(--accent,#FF6B00)':(i===activePhase?'var(--accent2,#FF9A3C)':'var(--line,#2A2A2A)'),
+    txt:i===activePhase?'var(--accent2,#FF9A3C)':'#6f6f6f',
+  }));
+
+  // current grade (from the practitioner's profile) → drives belt + program
+  let curGradeIdx=SYLLABUS.findIndex(g=>g.kyu===profile.kyu);
+  if(curGradeIdx<0) curGradeIdx=SYLLABUS.findIndex(g=>g.kyu==='2e kyu');
+  const curGrade=SYLLABUS[curGradeIdx];
+  const curBelt=belts[curGrade.belt];
+  const beltName=BELT_FR[curGrade.belt];
+  const statusOf=(i)=> i<curGradeIdx?'Acquis':(i===curGradeIdx?'En cours':'À venir');
+
+  // ---- page progression : les 2 prochains grades, checklist réelle + persistée ----
+  // items à valider d'un grade = chaque kata + le kihon introduit (coché = maîtrisé).
+  const gradeItems=(g)=>{
+    const items=[];
+    g.kata.forEach(k=>{ const m=KATA[k]||{k:'型'}; items.push({type:'Kata', nom:k, jp:m.k||'型', hasVid:!!VIDEOS[k]}); });
+    const stMeta=STANCES[g.kihon.stance]||{jp:''};
+    items.push({type:'Posture', nom:g.kihon.stance, jp:stMeta.jp||'', hasVid:false});
+    (KIHON_DETAIL[g.kyu]||[g.kihon.cat]).forEach(mv=>{ items.push({type:'Kihon', nom:mv, jp:kihonKanji(mv), hasVid:false, isKihon:true}); });
+    return items.map(it=>{ const key=techKey(g.kyu, it.type, it.nom); return {...it, key, done:!!progress[key]}; });
+  };
+  const nextGrades=[];
+  for(let i=curGradeIdx+1; i<SYLLABUS.length && nextGrades.length<2; i++){
+    const g=SYLLABUS[i], items=gradeItems(g), done=items.filter(it=>it.done).length;
+    nextGrades.push({
+      kyu:g.kyu, beltColor:belts[g.belt].c, beltText:belts[g.belt].t, beltName:BELT_FR[g.belt],
+      items, done, total:items.length, hasPlate:!!KIHON_PLATES[g.kyu],
+      kihonCat:g.kihon.cat, kihonN:(KIHON_DETAIL[g.kyu]||[]).length, stance:g.kihon.stance,
+    });
+  }
+  const progTotal=nextGrades.reduce((a,g)=>a+g.total,0);
+  const progDone=nextGrades.reduce((a,g)=>a+g.done,0);
+  const progPct=progTotal?Math.round(progDone/progTotal*100):0;
+  const homePct=progTotal?progPct:100;     // carte Accueil : % réel (100% si plus haut grade)
+  const futureBelt=nextGrades[0]||null;   // future ceinture = grade immédiatement suivant
+
+  // ---- programme du grade courant, dérivé du syllabus ----
+  // progression % déterministe (démo) par nom → stable d'un rendu à l'autre
+  const pctOf=(name)=>{ let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0; return 48 + h%43; }; // 48..90
+  const gradeTech=[];
+  curGrade.kata.forEach(k=>{ const m=KATA[k]||{k:'型'}; gradeTech.push({jp:m.k||'型', nom:k, type:'Kata', pct:pctOf(k)}); });
+  gradeTech.push({jp:curGrade.kihon.k, nom:curGrade.kihon.cat, type:'Kihon', pct:pctOf(curGrade.kihon.cat)});
+  const stMeta=STANCES[curGrade.kihon.stance]||{jp:'', desc:''};
+  gradeTech.push({jp:stMeta.jp, nom:curGrade.kihon.stance, type:'Posture', pct:pctOf(curGrade.kihon.stance)});
+  const beltTech=gradeTech.map(t=>({...t, barColor:t.pct>=80?'#22C55E':(t.pct>=60?'var(--accent2,#FF9A3C)':'#EF4444')}));
+  const beltPct=Math.round(beltTech.reduce((a,b)=>a+b.pct,0)/beltTech.length);
+
+  // vidéo de démo = 1er kata du grade ayant une vidéo intégrée ; sinon recherche YouTube
+  let beltVideo=null, beltVideoKata=null;
+  for(const k of curGrade.kata){ if(VIDEOS[k]){ beltVideo={...VIDEOS[k], title:VIDEOS[k].title||k}; beltVideoKata=k; break; } }
+  const searchKata=curGrade.kata[0]||curGrade.kihon.cat;
+
+  // posture de référence : illustration bundlée seulement si on l'a pour cette stance
+  const refStance=curGrade.kihon.stance;
+  const refImg=STANCE_IMG[refStance]||null;
+  const photoSrc=userPhoto || refImg;          // photo perso > illustration > rien
+  const isBundledRef=!userPhoto && !!refImg;    // affiche l'attribution Kihon Book
+  const programSub=`Kata : ${curGrade.kata.join(' · ')}`;
+
+  const libEntries=[
+    {key:'kata', name:'Kata', sub:'17 kata · du 10e kyu au 3e dan', icon:ICON_FIST, iconBg:'#1d2a1d', iconColor:'#22C55E', open:"goLib('kata')"},
+    {key:'kihon', name:'Kihon', sub:'Tsuki · Geri · Uke · Dachi…', icon:ICON_FOOT, iconBg:'#2a2012', iconColor:'var(--accent2,#FF9A3C)', open:"goLib('kihon')"},
+    {key:'glos', name:'Glossaire & Osu no seishin', sub:'Vocabulaire japonais → français', icon:'M4 5h12a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2zM4 5v12M18 7h2v12H8', iconBg:'#1c2330', iconColor:'#3B82F6', open:"goGlos()"},
+  ];
+
+  const accActive='var(--accent,#FF6B00)';
+  const tabs=[
+    {name:'Accueil',color:v==='home'?accActive:'#505050',icon:'M3 11l9-7 9 7M5 10v10h14V10',go:"goHome()"},
+    {name:'Kata',color:(v==='lib'&&state.libTab==='kata')?accActive:'#505050',icon:ICON_FIST,go:"goLib('kata')"},
+    {name:'Kihon',color:(v==='lib'&&state.libTab==='kihon')?accActive:'#505050',icon:ICON_FOOT,go:"goLib('kihon')"},
+    {name:'Grade',color:v==='belt'?accActive:'#505050',icon:'M4 5h16v15H4zM4 9h16M9 3v4M15 3v4',go:"goBelt()"},
+    {name:'Profil',color:v==='profile'?accActive:'#505050',icon:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21a7 7 0 0 1 14 0',go:"goProfile()"},
+  ];
+
+
+  // kata library : every kata of the syllabus, in grade order
+  const kataList=[];
+  SYLLABUS.forEach((g,i)=>g.kata.forEach(name=>{
+    const m=KATA[name]||{k:'?',jp:''};
+    kataList.push({kanji:m.k, nom:name, meta:m.jp, grade:g.kyu, belt:g.belt, status:statusOf(i)});
+  }));
+  // kihon library : one entry per grade (the weapon/category introduced)
+  const kihonList=SYLLABUS.filter(g=>g.kihon).map((g,idx)=>{
+    const i=SYLLABUS.indexOf(g);
+    return {kanji:g.kihon.k, nom:g.kihon.cat, meta:`${g.kihon.n} techniques · ${g.kihon.stance}`, grade:g.kyu, belt:g.belt, status:statusOf(i)};
+  });
+  const srcList=state.libTab==='kihon'?kihonList:kataList;
+  const isKihon=state.libTab==='kihon';
+  const libList=srcList.map(k=>({...k, beltColor:belts[k.belt].c, beltText:belts[k.belt].t, hasVid:!!VIDEOS[k.nom], isKihon, hasPlate:isKihon&&!!KIHON_PLATES[k.grade]}));
+  const libTabs=[{name:'Kata',key:'kata'},{name:'Kihon',key:'kihon'}].map(t=>{
+    const on=state.libTab===t.key;
+    return {name:t.name, key:t.key, bg:on?accActive:'var(--card2,#161616)', color:on?'#160a00':'#cfcfcf', border:on?accActive:'var(--line,#2a2a2a)'};
+  });
+
+  // ---- profile : belt progression ladder (dojo belt order) ----
+  const ladderRaw=[
+    {belt:'blanc',  grade:'Début'},
+    {belt:'rouge',  grade:'10–9e'},
+    {belt:'bleu',   grade:'8–7e'},
+    {belt:'jaune',  grade:'6–5e'},
+    {belt:'vert',   grade:'4–3e'},
+    {belt:'marron', grade:'2–1er'},
+    {belt:'noir',   grade:'Dan'},
+  ];
+  const currentBelt=SYLLABUS[curGradeIdx].belt;
+  const currentIdx=ladderRaw.findIndex(b=>b.belt===currentBelt);
+  const beltLadder=ladderRaw.map((b,i)=>({
+    ...b, beltColor:belts[b.belt].c, beltText:belts[b.belt].t,
+    done:i<currentIdx, current:i===currentIdx,
+  }));
+  const profileStats=[
+    {val:profile.stats.years||'—', unit:'ans', label:'de pratique'},
+    {val:profile.stats.sessions||'—', unit:'', label:'séances'},
+    {val:profile.stats.attendance||'—', unit:'%', label:'présence'},
+  ];
+  const palmares=profile.palmares.map(p=>{
+    const m=MEDALS[p.medal]||MEDALS.none;
+    return {place:m.place, tag:m.tag, tagColor:m.color, event:p.event||'—', year:p.year||''};
+  });
+  // ---- Dojo (page sociale, démo) : classement = membres fictifs + l'utilisateur réel ----
+  const meMember={ prenom:profile.prenom, belt:currentBelt, kyu:profile.kyu, pct:progPct, since:(profile.stats.years?profile.stats.years+' ans':'—'), me:true };
+  const dojoRanked=[...DOJO_MEMBERS, meMember]
+    .map(m=>({ ...m, rank:BELT_RANK[m.belt]||0, beltColor:belts[m.belt].c, beltText:belts[m.belt].t, beltName:BELT_FR[m.belt] }))
+    .sort((a,b)=> b.rank-a.rank || b.pct-a.pct)
+    .map((m,i)=>({ ...m, pos:i+1 }));
+  const dojoFeed=DOJO_FEED.map(e=>({ ...e, beltColor:belts[e.belt].c, beltText:belts[e.belt].t }));
+  const dojoCount=dojoRanked.length;
+
+  const settingsRows=[
+    {label:`Dojo — ${dojoCount} camarades de club`, icon:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', onclick:'goDojo()'},
+    {label:'Glossaire japonais → français', icon:'M4 5h12a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2zM4 5v12M18 7h2v12H8', onclick:'goGlos()'},
+    {label:'Objectifs & rappels', icon:'M12 8v4l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'},
+    {label:'Notifications', icon:'M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0'},
+    {label:'Données santé & HRV', icon:'M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z'},
+    {label:'Confidentialité', icon:'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z'},
+  ];
+
+  return {
+    themeVars,
+    prenom:profile.prenom, club:CLUB,
+    gradeLabel:profile.kyu, gradeColor:curBelt.c, gradeText:curBelt.t, beltColor:curBelt.c, beltName,
+    sommeil, hrv, fc,
+    healthConnected:H.connected, healthSource:H.source, healthMetrics:H.metrics,
+    sugLabel:sug?sug.label:'', sugColor:sug?sug.color:'#8a8a8a', sugDiffers,
+    formeLabel:f.label, formePct:f.pct, formeColor:f.color, formeMsg:f.msg, formeRingBg, formeGlow,
+    phaseLabel, phases, compEvent, compLabel, hasComp,
+    session:state.session,
+    physTitle:ph.title, physSub:ph.sub, physMin:ph.min, physTag:ph.tag, physTagColor:ph.tagColor,
+    physCheck:pd?'✓':'', physCheckBg:pd?'var(--accent,#FF6B00)':'transparent', physCheckBorder:pd?'var(--accent,#FF6B00)':'#3a3a3a',
+    physStrike:pd?'line-through':'none', physTitleColor:pd?'#6f6f6f':'#fff',
+    beltPct, beltTech,
+    nextGrades, progDone, progTotal, progPct, homePct, futureBelt,
+    video:beltVideo, videoKata:beltVideoKata, searchKata, programSub,
+    photoSrc, refStanceJp:stMeta.jp, refStanceName:refStance, refStanceDesc:stMeta.desc, isBundledRef,
+    videoLoaded:state.videoLoaded,
+    libEntries, libList, libTabs,
+    beltLadder, profileStats, palmares, settingsRows,
+    dojoRanked, dojoFeed, dojoCount,
+    isHome:v==='home', isBelt:v==='belt', isLib:v==='lib', isProfile:v==='profile', isGlos:v==='glos', isDojo:v==='dojo',
+    tabs,
+  };
+}
+
+//============================================================
+// view renderers
+//============================================================
+
+function homeView(d){
+  return `
+  <div>
+    <!-- hero forme -->
+    <div onclick="cycleForme()" style="cursor:pointer; position:relative; padding:18px 22px 24px; background:radial-gradient(120% 90% at 50% 0%, ${d.formeGlow} 0%, var(--screen,#0D0D0D) 62%); overflow:hidden;">
+      <img src="assets/kanji.png" style="position:absolute; top:6px; left:50%; transform:translateX(-50%); height:320px; opacity:var(--wmHero,.06); pointer-events:none;">
+      <div style="display:flex; align-items:center; justify-content:space-between; position:relative;">
+        <div><div style="font-size:13px; color:#cfcfcf; font-weight:600;">Osu, ${d.prenom}</div><div style="font-size:11px; color:#9a9a9a;">${d.club}</div></div>
+        <div style="display:inline-flex; align-items:center; gap:6px; background:${d.gradeColor}; color:${d.gradeText}; font-weight:700; font-size:12px; padding:5px 11px; border-radius:20px;">${d.gradeLabel}</div>
+      </div>
+      <div style="position:relative; margin:14px auto 0; width:200px; height:200px; border-radius:50%; background:${d.formeRingBg}; display:flex; align-items:center; justify-content:center; box-shadow:0 0 40px -8px ${d.formeGlow};">
+        <div style="width:164px; height:164px; border-radius:50%; background:var(--screen,#0D0D0D); display:flex; flex-direction:column; align-items:center; justify-content:center;">
+          <div style="font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#8a8a8a;">Forme</div>
+          <div style="font-family:'Saira',sans-serif; font-weight:800; font-size:52px; line-height:.9; color:${d.formeColor}; margin:2px 0;">${d.formePct}</div>
+          <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:16px; color:#fff;">${d.formeLabel}</div>
+        </div>
+      </div>
+      <div style="position:relative; text-align:center; margin-top:13px; font-size:14px; font-weight:700; color:${d.formeColor};">${d.formeMsg}</div>
+      <div style="position:relative; display:flex; justify-content:center; gap:16px; margin-top:11px;">
+        <div style="text-align:center;"><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:17px; color:#fff;">${d.sommeil}h</div><div style="font-size:10px; color:#8a8a8a;">Sommeil</div></div>
+        <div style="width:1px; background:var(--line,#242424);"></div>
+        <div style="text-align:center;"><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:17px; color:#fff;">${d.hrv}</div><div style="font-size:10px; color:#8a8a8a;">HRV ms</div></div>
+        <div style="width:1px; background:var(--line,#242424);"></div>
+        <div style="text-align:center;"><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:17px; color:#fff;">${d.fc}</div><div style="font-size:10px; color:#8a8a8a;">FC repos</div></div>
+      </div>
+    </div>
+
+    <!-- santé / récupération -->
+    <div style="margin:6px 18px 0; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); border-radius:18px; padding:14px 16px;">
+      ${d.healthConnected ? `
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        <div style="display:flex; align-items:center; gap:9px; min-width:0;">
+          <div style="width:30px; height:30px; border-radius:9px; background:#1d2a1d; display:flex; align-items:center; justify-content:center; flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.5 1-1a5.5 5.5 0 0 0 0-7.9z"/></svg></div>
+          <div style="min-width:0;"><div style="font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#22C55E;">Santé · connecté</div><div style="font-size:11.5px; color:#9a9a9a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.healthSource} · synchronisé</div></div>
+        </div>
+        <div onclick="disconnectHealth()" style="cursor:pointer; flex:none; font-size:10.5px; color:#7a7a7a; font-weight:700;">Déconnecter</div>
+      </div>
+      ${d.sugDiffers ? `
+      <div style="margin-top:12px; display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--card2,#141414); border:1px solid var(--line,#242424); border-radius:13px; padding:10px 12px;">
+        <div style="min-width:0;"><div style="font-size:10px; color:#8a8a8a;">Forme suggérée d'après ta récup'</div><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:${d.sugColor};">${d.sugLabel}</div></div>
+        <div onclick="applySuggestedForme()" style="cursor:pointer; flex:none; background:var(--accent,#FF6B00); color:#160a00; font-weight:800; font-size:12px; padding:8px 14px; border-radius:20px;">Appliquer</div>
+      </div>` : `
+      <div style="margin-top:10px; font-size:11px; color:#7a7a7a; display:flex; gap:6px; align-items:flex-start;"><span style="color:${d.formeColor};">●</span><span>Anneau à jour depuis Santé — ta forme du jour colle à ta récupération.</span></div>`}
+      ` : `
+      <div style="display:flex; align-items:center; gap:11px;">
+        <div style="width:34px; height:34px; border-radius:10px; background:var(--card2,#141414); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent2,#FF9A3C)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.5 1-1a5.5 5.5 0 0 0 0-7.9z"/></svg></div>
+        <div style="flex:1; min-width:0;"><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#fff;">Connecter Santé</div><div style="font-size:11.5px; color:#8a8a8a; line-height:1.4;">VFC, FC repos &amp; sommeil → suggèrent ta forme automatiquement.</div></div>
+      </div>
+      <div onclick="connectHealth()" style="cursor:pointer; margin-top:12px; text-align:center; background:var(--accent,#FF6B00); color:#160a00; font-weight:800; font-size:13px; padding:11px; border-radius:13px;">Connecter Apple Santé / Health Connect</div>
+      `}
+    </div>
+
+    <!-- préparation compétition -->
+    <div style="margin:6px 18px 0; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); border-radius:18px; padding:15px 16px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div><div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent,#FF6B00);">Préparation compétition</div><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:16px; color:#fff; margin-top:2px;">${d.compEvent}</div></div>
+        <div style="text-align:right;">${d.hasComp
+          ? `<div style="font-family:'Saira',sans-serif; font-weight:800; font-size:24px; color:#fff; line-height:1;">${d.compLabel}</div><div style="font-size:10px; color:var(--accent2,#FF9A3C);">${d.phaseLabel}</div>`
+          : `<div onclick="openEditProfile()" style="cursor:pointer; display:inline-block; font-size:11px; font-weight:800; color:#160a00; background:var(--accent2,#FF9A3C); padding:6px 11px; border-radius:9px;">+ Ajouter la date</div>`}</div>
+      </div>
+      <div style="display:flex; gap:4px; margin-top:13px;">
+        ${d.phases.map(p=>`<div style="flex:${p.flex};"><div style="height:6px; border-radius:99px; background:${p.bg};"></div><div style="font-size:8.5px; color:${p.txt}; margin-top:4px; font-weight:600; text-align:center;">${p.name}</div></div>`).join('')}
+      </div>
+      ${d.session ? `
+        <div onclick="openSession()" style="cursor:pointer; margin-top:14px; display:flex; align-items:center; gap:12px; background:var(--card2,#141414); border:1px solid var(--line,#242424); border-radius:14px; padding:12px 13px;">
+          <div style="width:40px; height:40px; border-radius:11px; flex:none; background:${d.session.tagColor}22; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${d.session.tagColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div>
+          <div style="flex:1; min-width:0;">
+            <span style="font-size:9px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:${d.session.tagColor};">Séance prête · ${d.session.tag}</span>
+            <div style="font-size:14px; font-weight:700; color:#fff;">Circuit · poids du corps</div>
+            <div style="font-size:11.5px; color:#8a8a8a;">${d.session.circuit.length} exos · ${d.session.rounds} tours · ~${d.session.totalMin} min</div>
+          </div>
+          <div style="font-size:16px; color:#5a5a5a;">›</div>
+        </div>
+        <div onclick="generateSession()" style="cursor:pointer; margin-top:9px; text-align:center; padding:10px; border-radius:12px; border:1px solid var(--line,#242424); font-size:12.5px; font-weight:800; color:var(--accent2,#FF9A3C);">↻ Générer une autre séance</div>
+      ` : `
+        <div onclick="generateSession()" style="cursor:pointer; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:9px; padding:13px; border-radius:14px; background:var(--accent,#FF6B00); color:#160a00; font-size:13.5px; font-weight:800;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#160a00" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>Générer une séance (15–20 min)</div>
+      `}
+      <div style="margin-top:8px; font-size:11px; color:#7a7a7a; display:flex; gap:6px; align-items:flex-start;"><span style="color:${d.formeColor};">●</span><span>Circuit au poids du corps, intensité calée sur ta forme du jour (${d.formeLabel}).</span></div>
+    </div>
+
+    <!-- programme en cours · ceinture -->
+    <div onclick="goBelt()" style="cursor:pointer; margin:13px 18px 0; position:relative; background:linear-gradient(135deg,var(--accentDk,#2a1d12),var(--card,#1A1A1A)); border:1px solid var(--line,#242424); border-radius:18px; padding:15px 16px; overflow:hidden;">
+      <img src="assets/kanji.png" style="position:absolute; right:-18px; top:-14px; height:130px; opacity:var(--wmCard,.14);">
+      <div style="display:flex; align-items:center; gap:13px; position:relative;">
+        <div style="width:46px; height:46px; border-radius:12px; background:${d.beltColor}; box-shadow:0 0 0 1px rgba(255,255,255,.12) inset; display:flex; align-items:center; justify-content:center;"><div style="width:36px; height:8px; border-radius:2px; background:rgba(255,255,255,.25);"></div></div>
+        <div style="flex:1;">
+          <div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent2,#FF9A3C);">Programme en cours</div>
+          <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:17px; color:#fff;">Ceinture ${d.beltName} · ${d.gradeLabel}</div>
+          <div style="font-size:11.5px; color:#a8a8a8;">${d.futureBelt ? `Vers ${d.futureBelt.kyu} · ${d.progDone}/${d.progTotal} mouvements maîtrisés` : d.programSub}</div>
+        </div>
+        <div style="font-size:18px; color:var(--accent,#FF6B00); font-weight:700;">›</div>
+      </div>
+      <div style="margin-top:12px; display:flex; align-items:center; gap:10px; position:relative;">
+        <div style="flex:1; height:7px; background:var(--line,#242424); border-radius:99px; overflow:hidden;"><div style="width:${d.homePct}%; height:100%; background:linear-gradient(90deg,var(--accent,#FF6B00),var(--accent2,#FF9A3C)); border-radius:99px;"></div></div>
+        <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:13px; color:var(--accent2,#FF9A3C);">${d.homePct}%</div>
+      </div>
+    </div>
+
+    <!-- carte Dojo (communauté) -->
+    <div onclick="goDojo()" style="cursor:pointer; margin:18px 18px 0; position:relative; overflow:hidden; display:flex; align-items:center; gap:13px; background:linear-gradient(135deg,var(--card,#1A1A1A),var(--card2,#141414)); border:1px solid var(--line,#242424); border-radius:16px; padding:14px 15px;">
+      <img src="assets/daishin-logo-dark.webp" style="width:44px; height:44px; flex:none; object-fit:contain;">
+      <div style="flex:1; min-width:0; position:relative;">
+        <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#fff;">Mon dojo</div>
+        <div style="font-size:11.5px; color:#9a9a9a;">${d.dojoCount} membres · classement & activité</div>
+      </div>
+      <div style="font-size:16px; color:#5a5a5a; position:relative;">›</div>
+    </div>
+
+    <!-- bibliothèque à la demande -->
+    <div style="margin:18px 18px 0; display:flex; align-items:center; justify-content:space-between;"><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#fff;">Bibliothèque IFK</div><div style="font-size:11px; color:#8a8a8a;">consultable à la demande</div></div>
+    <div style="margin:11px 18px 0; display:flex; flex-direction:column; gap:9px;">
+      ${d.libEntries.map(e=>`
+        <div onclick="${e.open}" style="cursor:pointer; display:flex; align-items:center; gap:13px; background:var(--card2,#161616); border:1px solid var(--line,#242424); border-radius:14px; padding:13px 14px;">
+          <div style="width:38px; height:38px; border-radius:11px; background:${e.iconBg}; display:flex; align-items:center; justify-content:center; flex:none;">${iconSVG(e.icon, e.iconColor, 19)}</div>
+          <div style="flex:1;"><div style="font-size:14.5px; font-weight:700; color:#fff;">${e.name}</div><div style="font-size:11.5px; color:#8a8a8a;">${e.sub}</div></div>
+          <div style="font-size:16px; color:#5a5a5a;">›</div>
+        </div>`).join('')}
+    </div>
+    <div style="height:96px;"></div>
+  </div>`;
+}
+
+function beltView(d){
+  const back=`<div onclick="goHome()" style="cursor:pointer; width:34px; height:34px; border-radius:11px; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px;">‹</div>`;
+
+  // grade déjà au sommet du syllabus → rien à préparer
+  if(!d.nextGrades.length){
+    return `
+    <div>
+      <div style="display:flex; align-items:center; gap:12px; padding:14px 18px 6px;">${back}
+        <div><div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent2,#FF9A3C);">Progression</div><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:18px; color:#fff;">Ceinture ${d.beltName} · ${d.gradeLabel}</div></div>
+      </div>
+      <div style="margin:22px 18px 0; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); border-radius:18px; padding:22px 18px; text-align:center;">
+        <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:16px; color:#fff;">Plus haut grade du syllabus</div>
+        <div style="font-size:12px; color:#9a9a9a; margin-top:6px; line-height:1.5;">Aucun grade suivant à préparer. Osu !</div>
+      </div>
+      <div style="height:96px;"></div>
+    </div>`;
+  }
+
+  const fb=d.futureBelt;
+  return `
+  <div>
+    <div style="display:flex; align-items:center; gap:12px; padding:14px 18px 6px;">${back}
+      <div><div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent2,#FF9A3C);">Objectif suivant</div><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:18px; color:#fff;">Ceinture ${fb.beltName} · ${fb.kyu}</div></div>
+    </div>
+
+    <!-- future ceinture + barre de progression cumulée sur les 2 prochains grades -->
+    <div style="margin:10px 18px 0; position:relative; background:linear-gradient(135deg,var(--accentDk,#2a1d12),var(--card,#1A1A1A)); border:1px solid var(--line,#242424); border-radius:18px; padding:16px; overflow:hidden;">
+      <img src="assets/kanji.png" style="position:absolute; right:-18px; top:-14px; height:130px; opacity:var(--wmCard,.14); pointer-events:none;">
+      <div style="display:flex; align-items:center; gap:13px; position:relative;">
+        <div style="width:54px; height:54px; border-radius:14px; background:${fb.beltColor}; box-shadow:0 0 0 1px rgba(255,255,255,.14) inset; display:flex; align-items:center; justify-content:center; flex:none;"><div style="width:40px; height:9px; border-radius:2px; background:rgba(255,255,255,.28);"></div></div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent2,#FF9A3C);">Prochaine ceinture</div>
+          <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:18px; color:#fff;">Ceinture ${fb.beltName}</div>
+          <div style="font-size:11.5px; color:#a8a8a8;">${d.progDone} / ${d.progTotal} mouvements maîtrisés · 2 prochains grades</div>
+        </div>
+      </div>
+      <div style="margin-top:13px; display:flex; align-items:center; gap:10px; position:relative;">
+        <div style="flex:1; height:8px; background:var(--line,#242424); border-radius:99px; overflow:hidden;"><div style="width:${d.progPct}%; height:100%; background:linear-gradient(90deg,var(--accent,#FF6B00),var(--accent2,#FF9A3C)); border-radius:99px; transition:width .3s ease;"></div></div>
+        <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:14px; color:var(--accent2,#FF9A3C);">${d.progPct}%</div>
+      </div>
+    </div>
+
+    <!-- une section par grade, chacune avec sa couleur de ceinture + sa liste -->
+    ${d.nextGrades.map((g,gi)=>`
+      <div style="margin:18px 18px 0;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:32px; height:32px; border-radius:9px; background:${g.beltColor}; box-shadow:0 0 0 1px rgba(255,255,255,.14) inset; display:flex; align-items:center; justify-content:center; flex:none;"><div style="width:22px; height:6px; border-radius:2px; background:rgba(255,255,255,.28);"></div></div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#8a8a8a;">${gi===0?'Prochain grade':'Ensuite'}</div>
+            <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#fff;">Ceinture ${g.beltName} · ${g.kyu}</div>
+            <div style="font-size:10.5px; color:#8a8a8a;">Kihon : ${g.kihonCat} (${g.kihonN}) · posture ${g.stance}</div>
+          </div>
+          ${g.hasPlate?`<div onclick="openKihon('${g.kyu}')" style="cursor:pointer; flex:none; display:inline-flex; align-items:center; gap:5px; background:var(--card2,#161616); border:1px solid var(--line,#242424); border-radius:20px; padding:6px 10px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent2,#FF9A3C)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span style="font-size:10.5px; font-weight:700; color:var(--accent2,#FF9A3C);">Planche</span></div>`:''}
+          <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:13px; color:${g.done===g.total?'#22C55E':'var(--accent2,#FF9A3C)'}; flex:none; width:38px; text-align:right;">${g.done}/${g.total}</div>
+        </div>
+        <div style="margin-top:11px; display:flex; flex-direction:column; gap:8px;">
+          ${g.items.map(it=>`
+            <div onclick="toggleTech('${it.key}')" style="cursor:pointer; display:flex; align-items:center; gap:12px; background:var(--card2,#161616); border:1px solid ${it.done?'rgba(34,197,94,.45)':'var(--line,#242424)'}; border-radius:13px; padding:11px 13px;">
+              <div style="width:24px; height:24px; border-radius:8px; flex:none; border:2px solid ${it.done?'#22C55E':'#3a3a3a'}; background:${it.done?'#22C55E':'transparent'}; display:flex; align-items:center; justify-content:center;">${it.done?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`:''}</div>
+              <div style="flex:1; min-width:0; display:flex; align-items:baseline; gap:8px;">
+                ${it.jp?`<span style="font-family:'Noto Sans JP',sans-serif; font-weight:700; font-size:14px; color:#cfcfcf; flex:none;">${it.jp}</span>`:''}
+                <span style="font-family:'Saira',sans-serif; font-weight:700; font-size:13.5px; color:${it.done?'#7f7f7f':'#fff'}; text-decoration:${it.done?'line-through':'none'};">${it.nom}</span>
+              </div>
+              <span style="font-size:9px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:${it.type==='Kata'?'#22C55E':(it.type==='Posture'?'#3B82F6':'var(--accent2,#FF9A3C)')}; flex:none;">${it.type}</span>
+              <div onclick="event.stopPropagation(); ${it.isKihon?`ytSearch('${it.nom} kihon')`:(it.hasVid?`openKataVideo('${it.nom}')`:`ytSearch('${it.nom}')`)}" style="cursor:pointer; flex:none; width:27px; height:27px; border-radius:8px; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${it.hasVid?'var(--accent2,#FF9A3C)':'#6a6a6a'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 9l5 3-5 3z" fill="${it.hasVid?'var(--accent2,#FF9A3C)':'#6a6a6a'}"/></svg>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('')}
+
+    <div style="margin:16px 18px 0; font-size:11px; color:#7a7a7a; display:flex; gap:6px; align-items:flex-start;"><span style="color:var(--accent2,#FF9A3C);">●</span><span>Coche un mouvement une fois que tu le maîtrises. Le ▶ ouvre une démo / recherche. Ta progression est enregistrée sur cet appareil.</span></div>
+    <div style="height:96px;"></div>
+  </div>`;
+}
+
+function libView(d){
+  return `
+  <div>
+    <div style="display:flex; align-items:center; gap:12px; padding:14px 18px 10px;">
+      <div onclick="goHome()" style="cursor:pointer; width:34px; height:34px; border-radius:11px; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px;">‹</div>
+      <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:19px; color:#fff;">Bibliothèque IFK</div>
+    </div>
+    <div style="display:flex; gap:8px; padding:0 18px;">
+      ${d.libTabs.map(lt=>`<div onclick="goLib('${lt.key}')" style="cursor:pointer; padding:8px 15px; border-radius:99px; font-size:13px; font-weight:700; background:${lt.bg}; color:${lt.color}; border:1px solid ${lt.border};">${lt.name}</div>`).join('')}
+    </div>
+    <div style="margin:13px 18px 0; display:flex; flex-direction:column; gap:9px;">
+      ${d.libList.map(k=>`
+        <div onclick="${k.hasPlate ? `openKihon('${k.grade}')` : (k.hasVid ? `openKataVideo('${k.nom}')` : `ytSearch('${k.nom}')`)}" style="cursor:pointer; display:flex; align-items:center; gap:13px; background:var(--card2,#161616); border:1px solid var(--line,#242424); border-radius:13px; padding:12px 13px;">
+          <div style="width:40px; height:40px; border-radius:11px; background:${k.beltColor}; display:flex; align-items:center; justify-content:center; flex:none; box-shadow:0 0 0 1px rgba(255,255,255,.1) inset;"><span style="font-family:'Noto Sans JP',sans-serif; font-weight:700; font-size:16px; color:${k.beltText};">${k.kanji}</span></div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#fff;">${k.nom}</div>
+            <div style="font-size:11.5px; color:#8a8a8a;">${k.meta}</div>
+          </div>
+          <div style="text-align:right; flex:none;"><div style="display:inline-block; font-size:10px; font-weight:700; color:${k.beltText}; background:${k.beltColor}; padding:3px 8px; border-radius:12px;">${k.grade}</div>${k.hasPlate
+            ? `<div style="display:flex; align-items:center; justify-content:flex-end; gap:4px; font-size:10px; color:var(--accent2,#FF9A3C); margin-top:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent2,#FF9A3C)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Illustration</div>`
+            : `<div style="display:flex; align-items:center; justify-content:flex-end; gap:4px; font-size:10px; color:${k.hasVid?'var(--accent2,#FF9A3C)':'#6f6f6f'}; margin-top:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${k.hasVid?'var(--accent2,#FF9A3C)':'#6f6f6f'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 9l5 3-5 3z" fill="${k.hasVid?'var(--accent2,#FF9A3C)':'#6f6f6f'}"/></svg>${k.hasVid?'Vidéo':k.status}</div>`}</div>
+        </div>`).join('')}
+    </div>
+    <div style="height:96px;"></div>
+  </div>`;
+}
+
+function profileView(d){
+  return `
+  <div>
+    <!-- header -->
+    <div style="position:relative; padding:20px 22px 22px; overflow:hidden; background:radial-gradient(120% 90% at 50% 0%, ${d.formeGlow} 0%, var(--screen,#0D0D0D) 60%);">
+      <img src="assets/kanji.png" style="position:absolute; top:-6px; right:-14px; height:200px; opacity:var(--wmHero,.06); pointer-events:none;">
+      <div style="position:relative; display:flex; align-items:center; gap:15px;">
+        <div style="width:74px; height:74px; border-radius:22px; flex:none; background:linear-gradient(135deg,var(--accent,#FF6B00),var(--accentDk,#2a1d12)); display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 1px rgba(255,255,255,.12) inset, 0 8px 22px -8px ${d.formeGlow};">
+          <span style="font-family:'Saira',sans-serif; font-weight:800; font-size:30px; color:#fff;">${d.prenom.charAt(0)}</span>
+        </div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-family:'Saira',sans-serif; font-weight:800; font-size:23px; color:#fff; line-height:1.05;">Osu, ${d.prenom}</div>
+          <div style="font-size:12px; color:#9a9a9a; margin-top:2px;">${d.club}</div>
+          <div style="margin-top:8px; display:inline-flex; align-items:center; gap:7px;">
+            <span style="width:16px; height:16px; border-radius:5px; background:${d.beltColor}; box-shadow:0 0 0 1px rgba(255,255,255,.18) inset;"></span>
+            <span style="font-size:12px; font-weight:700; color:#cfcfcf;">Ceinture ${d.beltName} · ${d.gradeLabel}</span>
+          </div>
+        </div>
+        <div onclick="openEditProfile()" style="cursor:pointer; flex:none; align-self:flex-start; width:34px; height:34px; border-radius:11px; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent2,#FF9A3C)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
+      </div>
+    </div>
+
+    <!-- progression ceinture -->
+    <div style="margin:6px 18px 0;">
+      <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#fff; margin-bottom:11px;">Progression ceinture</div>
+      <div style="display:flex; align-items:flex-start;">
+        ${d.beltLadder.map((b,i)=>`
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center;">
+            <div style="display:flex; align-items:center; width:100%;">
+              <div style="flex:1; height:3px; background:${i===0?'transparent':(b.done||b.current?'var(--accent,#FF6B00)':'var(--line,#242424)')};"></div>
+              <div style="width:30px; height:30px; flex:none; border-radius:9px; background:${b.beltColor}; box-shadow:0 0 0 ${b.current?'2px var(--accent,#FF6B00)':'1px rgba(255,255,255,.12) inset'}; display:flex; align-items:center; justify-content:center;">
+                ${b.done?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${b.beltText}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`:(b.current?`<span style="width:9px; height:9px; border-radius:50%; background:${b.beltText};"></span>`:``)}
+              </div>
+              <div style="flex:1; height:3px; background:${i===d.beltLadder.length-1?'transparent':(d.beltLadder[i+1].done||d.beltLadder[i+1].current?'var(--accent,#FF6B00)':'var(--line,#242424)')};"></div>
+            </div>
+            <div style="font-size:9.5px; font-weight:700; color:${b.current?'var(--accent2,#FF9A3C)':(b.done?'#cfcfcf':'#6f6f6f')}; margin-top:6px;">${b.grade}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- palmarès -->
+    <div style="margin:20px 18px 0;">
+      <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#fff; margin-bottom:11px;">Palmarès</div>
+      <div style="display:flex; flex-direction:column; gap:9px;">
+        ${d.palmares.map(p=>`
+          <div style="display:flex; align-items:center; gap:13px; background:var(--card2,#161616); border:1px solid var(--line,#242424); border-radius:13px; padding:12px 13px;">
+            <div style="width:40px; height:40px; border-radius:11px; flex:none; background:${p.tagColor}1f; display:flex; align-items:center; justify-content:center;">
+              <span style="font-family:'Saira',sans-serif; font-weight:800; font-size:15px; color:${p.tagColor};">${p.place}</span>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:14.5px; color:#fff;">${p.event}</div>
+              <div style="font-size:11.5px; color:#8a8a8a;">${p.year}</div>
+            </div>
+            <div style="font-size:9px; font-weight:800; letter-spacing:.5px; color:${p.tagColor};">${p.tag}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- réglages -->
+    <div style="margin:20px 18px 0;">
+      <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#fff; margin-bottom:11px;">Réglages</div>
+      <div style="background:var(--card2,#161616); border:1px solid var(--line,#242424); border-radius:14px; overflow:hidden;">
+        ${d.settingsRows.map((r,i)=>`
+          <div ${r.onclick?`onclick="${r.onclick}"`:''} style="display:flex; align-items:center; gap:13px; padding:13px 14px; ${i>0?'border-top:1px solid var(--line,#242424);':''} cursor:pointer;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent2,#FF9A3C)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${r.icon}"/></svg>
+            <div style="flex:1; font-size:14px; font-weight:600; color:#e8e8e8;">${r.label}</div>
+            <div style="font-size:16px; color:#5a5a5a;">›</div>
+          </div>`).join('')}
+      </div>
+      <div onclick="goHome()" style="cursor:pointer; margin-top:11px; text-align:center; padding:13px; border-radius:14px; border:1px solid var(--line,#242424); font-size:13px; font-weight:700; color:#EF4444;">Déconnexion</div>
+    </div>
+    <div style="height:96px;"></div>
+  </div>`;
+}
+
+function glossaryView(d){
+  return `
+  <div>
+    <div style="display:flex; align-items:center; gap:12px; padding:14px 18px 4px;">
+      <div onclick="goHome()" style="cursor:pointer; width:34px; height:34px; border-radius:11px; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px;">‹</div>
+      <div><div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent2,#FF9A3C);">Référence</div><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:19px; color:#fff;">Glossaire</div></div>
+    </div>
+    <div style="margin:2px 18px 0; font-size:11.5px; color:#8a8a8a; line-height:1.45;">Vocabulaire japonais du karaté Kyokushin (IFK), traduit en français.</div>
+    ${GLOSSARY.map(sec=>`
+      <div style="margin:18px 18px 0;">
+        <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:12px; letter-spacing:.5px; text-transform:uppercase; color:var(--accent2,#FF9A3C); margin-bottom:9px;">${sec.title}</div>
+        <div style="background:var(--card2,#161616); border:1px solid var(--line,#242424); border-radius:14px; overflow:hidden;">
+          ${sec.items.map((it,i)=>`
+            <div style="display:flex; align-items:center; gap:12px; padding:10px 13px; ${i>0?'border-top:1px solid var(--line,#242424);':''}">
+              <span style="font-family:'Noto Sans JP',sans-serif; font-weight:700; font-size:17px; color:#cfcfcf; min-width:34px; text-align:center; flex:none;">${it.jp||''}</span>
+              <div style="flex:1; min-width:0;">
+                <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:14px; color:#fff;">${it.rj}</div>
+                <div style="font-size:12px; color:#9a9a9a; line-height:1.4;">${it.fr}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('')}
+    <div style="height:96px;"></div>
+  </div>`;
+}
+
+function dojoView(d){
+  const podium={1:'#D4A12A',2:'#9CA3AF',3:'#B06B3A'};
+  return `
+  <div>
+    <!-- header -->
+    <div style="display:flex; align-items:center; gap:12px; padding:14px 18px 4px;">
+      <div onclick="goProfile()" style="cursor:pointer; width:34px; height:34px; border-radius:11px; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px;">‹</div>
+      <div><div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent2,#FF9A3C);">Communauté</div><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:19px; color:#fff;">Mon dojo</div></div>
+    </div>
+
+    <!-- carte club -->
+    <div style="margin:10px 18px 0; position:relative; overflow:hidden; background:linear-gradient(135deg,var(--card,#1A1A1A),var(--card2,#141414)); border:1px solid var(--line,#242424); border-radius:18px; padding:16px;">
+      <img src="assets/daishin-logo-dark.webp" style="position:absolute; top:50%; right:-12px; transform:translateY(-50%); height:104px; opacity:.92; pointer-events:none;">
+      <div style="position:relative; font-family:'Saira',sans-serif; font-weight:800; font-size:18px; color:#fff;">${d.club}</div>
+      <div style="position:relative; max-width:62%; font-size:12px; color:#9a9a9a; margin-top:3px;">${d.dojoCount} membres sur l'app · classés par grade puis progression</div>
+    </div>
+
+    <!-- bandeau démo -->
+    <div style="margin:10px 18px 0; display:flex; gap:9px; align-items:flex-start; background:#1c1606; border:1px solid #3a2e0c; border-radius:12px; padding:10px 12px;">
+      <span style="font-size:14px; line-height:1.2;">🚧</span>
+      <div style="font-size:11px; color:#caa64a; line-height:1.45;"><b>Aperçu (démo)</b> — membres fictifs pour illustrer l'idée. Le partage réel entre téléphones demandera des comptes + un serveur.</div>
+    </div>
+
+    <!-- classement -->
+    <div style="margin:18px 18px 0;">
+      <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:13px; letter-spacing:.5px; text-transform:uppercase; color:var(--accent2,#FF9A3C); margin-bottom:10px;">Classement du dojo</div>
+      <div style="display:flex; flex-direction:column; gap:9px;">
+        ${d.dojoRanked.map(m=>`
+          <div style="display:flex; align-items:center; gap:12px; background:${m.me?'var(--card,#1A1A1A)':'var(--card2,#161616)'}; border:1px solid ${m.me?'var(--accent,#FF6B00)':'var(--line,#242424)'}; border-radius:14px; padding:11px 12px;">
+            <div style="width:22px; text-align:center; flex:none; font-family:'Saira',sans-serif; font-weight:800; font-size:15px; color:${podium[m.pos]||'#6f6f6f'};">${m.pos}</div>
+            <div style="width:40px; height:40px; flex:none; border-radius:12px; background:${m.beltColor}; display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 1px rgba(255,255,255,.12) inset;">
+              <span style="font-family:'Saira',sans-serif; font-weight:800; font-size:17px; color:${m.beltText};">${m.prenom.charAt(0)}</span>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; gap:7px;">
+                <span style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#fff;">${m.prenom}</span>
+                ${m.me?`<span style="font-size:8.5px; font-weight:800; letter-spacing:.5px; color:#160a00; background:var(--accent,#FF6B00); padding:2px 6px; border-radius:6px;">MOI</span>`:''}
+              </div>
+              <div style="font-size:11px; color:#8a8a8a; margin-top:1px;">Ceinture ${m.beltName} · ${m.kyu}</div>
+              <div style="margin-top:7px; height:5px; border-radius:3px; background:var(--line,#242424); overflow:hidden;">
+                <div style="width:${m.pct}%; height:100%; border-radius:3px; background:linear-gradient(90deg,var(--accent,#FF6B00),var(--accent2,#FF9A3C));"></div>
+              </div>
+            </div>
+            <div style="flex:none; font-family:'Saira',sans-serif; font-weight:800; font-size:14px; color:var(--accent2,#FF9A3C);">${m.pct}%</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- activité récente -->
+    <div style="margin:22px 18px 0;">
+      <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:13px; letter-spacing:.5px; text-transform:uppercase; color:var(--accent2,#FF9A3C); margin-bottom:10px;">Activité récente</div>
+      <div style="background:var(--card2,#161616); border:1px solid var(--line,#242424); border-radius:14px; overflow:hidden;">
+        ${d.dojoFeed.map((e,i)=>`
+          <div style="display:flex; align-items:center; gap:12px; padding:12px 13px; ${i>0?'border-top:1px solid var(--line,#242424);':''}">
+            <div style="width:30px; height:30px; flex:none; border-radius:9px; background:${e.beltColor}; display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 1px rgba(255,255,255,.12) inset;">
+              <span style="font-family:'Saira',sans-serif; font-weight:800; font-size:13px; color:${e.beltText};">${e.who.charAt(0)}</span>
+            </div>
+            <div style="flex:1; min-width:0; font-size:13px; color:#d8d8d8; line-height:1.4;"><b style="color:#fff;">${e.who}</b> ${e.txt}</div>
+            <div style="flex:none; font-size:10px; color:#6f6f6f;">${e.when}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div style="height:96px;"></div>
+  </div>`;
+}
+
+function playerHTML(){
+  const p=state.player; if(!p) return '';
+  if(p.done){
+    return `
+    <div style="position:absolute; inset:0; z-index:46; background:var(--screen,#0D0D0D); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px; gap:13px;">
+      <div style="font-size:54px;">🥋</div>
+      <div style="font-family:'Saira',sans-serif; font-weight:800; font-size:26px; color:#fff;">Séance terminée !</div>
+      <div style="font-size:14px; color:#9a9a9a; max-width:82%; line-height:1.5;">Bien joué. Étire-toi, hydrate-toi et récupère. Osu !</div>
+      <div onclick="quitPlayer()" style="cursor:pointer; margin-top:8px; padding:13px 30px; border-radius:14px; background:var(--accent,#FF6B00); color:#160a00; font-size:14px; font-weight:800;">Terminer</div>
+    </div>`;
+  }
+  const st=p.steps[p.idx];
+  const COL={ warmup:'#FF9A3C', work:'#22C55E', rest:'#3B82F6', cooldown:'#9CA3AF' };
+  const KIND={ warmup:'Échauffement', work:'Effort', rest:'Repos', cooldown:'Retour au calme' };
+  const col=COL[st.kind]||'#FF6B00';
+  const roundInfo = st.round ? `Tour ${st.round}/${st.rounds}` : '';
+  const exoInfo = st.kind==='work' ? `Exercice ${st.exo}/${st.exoN}` : '';
+  const pct = 100*(st.seconds-p.remaining)/st.seconds;
+  const nx = p.steps[p.idx+1];
+  const nextLabel = nx ? (nx.kind==='work'?nx.name : nx.kind==='rest'?'Repos' : nx.kind==='cooldown'?'Retour au calme' : nx.name) : 'Fin de séance';
+  return `
+  <div style="position:absolute; inset:0; z-index:45; background:var(--screen,#0D0D0D); display:flex; flex-direction:column; padding:max(env(safe-area-inset-top),18px) 20px max(env(safe-area-inset-bottom),20px);">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div style="font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:${col};">${KIND[st.kind]}${roundInfo?` · ${roundInfo}`:''}</div>
+      <div onclick="quitPlayer()" style="cursor:pointer; width:32px; height:32px; border-radius:10px; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px;">✕</div>
+    </div>
+    <div style="margin-top:10px; display:flex; gap:3px;">
+      ${p.steps.map((s2,i)=>`<div style="flex:1; height:3px; border-radius:2px; background:${i<=p.idx?col:'var(--line,#242424)'}; opacity:${i<=p.idx?1:.45};"></div>`).join('')}
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:4px; min-height:0;">
+      ${exoInfo?`<div style="font-size:12px; font-weight:700; color:#8a8a8a;">${exoInfo}</div>`:''}
+      <div style="font-family:'Saira',sans-serif; font-weight:800; font-size:28px; color:#fff; line-height:1.1; max-width:92%;">${st.name}</div>
+      ${st.sub?`<div style="font-size:12.5px; color:#9a9a9a; max-width:88%; line-height:1.4;">${st.sub}</div>`:''}
+      <div id="pl-ring" data-col="${col}" style="position:relative; margin-top:14px; width:224px; height:224px; border-radius:50%; background:conic-gradient(${col} ${(pct*3.6).toFixed(1)}deg, var(--line,#242424) 0deg); display:flex; align-items:center; justify-content:center;">
+        <div style="width:194px; height:194px; border-radius:50%; background:var(--screen,#0D0D0D); display:flex; align-items:center; justify-content:center;">
+          <div id="pl-time" style="font-family:'Saira',sans-serif; font-weight:800; font-size:58px; color:${col};">${fmtTime(p.remaining)}</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <div onclick="adjustStep(-10)" style="cursor:pointer; padding:8px 15px; border-radius:10px; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); font-size:13px; font-weight:800; color:#cfcfcf;">−10s</div>
+        <div onclick="adjustStep(10)" style="cursor:pointer; padding:8px 15px; border-radius:10px; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); font-size:13px; font-weight:800; color:#cfcfcf;">+10s</div>
+      </div>
+      <div style="margin-top:14px; font-size:12px; color:#7a7a7a;">Ensuite : <b style="color:#cfcfcf;">${nextLabel}</b></div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:center;">
+      <div onclick="prevStep()" style="cursor:pointer; flex:none; width:52px; height:54px; border-radius:16px; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; color:#cfcfcf; font-size:18px;">⏮</div>
+      <div onclick="togglePlayer()" style="cursor:pointer; flex:1; height:54px; border-radius:16px; background:${col}; color:#0D0D0D; display:flex; align-items:center; justify-content:center; gap:8px; font-size:15px; font-weight:800;">${p.running?'❚❚ Pause':'▶ Reprendre'}</div>
+      <div onclick="nextStep()" style="cursor:pointer; flex:none; width:52px; height:54px; border-radius:16px; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; color:#cfcfcf; font-size:18px;">⏭</div>
+    </div>
+  </div>`;
+}
+
+function sessionModalHTML(){
+  const s=state.session; if(!s) return '';
+  const CAT=CAT_LABEL;
+  const fLabel=(formeData[s.forme]||{}).label||'';
+  return `
+  <div onclick="closeSession()" style="position:absolute; inset:0; z-index:40; background:rgba(0,0,0,.86); backdrop-filter:blur(4px); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14px;">
+    <div onclick="event.stopPropagation()" style="display:flex; flex-direction:column; width:100%; max-height:100%; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); border-radius:18px; overflow:hidden; box-shadow:0 24px 60px -16px rgba(0,0,0,.7);">
+      <div style="flex:none; padding:15px 16px; border-bottom:1px solid var(--line,#242424); background:linear-gradient(135deg,${s.tagColor}26,transparent);">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between;">
+          <div><div style="font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:${s.tagColor};">Séance générée · ${s.tag}</div>
+          <div style="font-family:'Saira',sans-serif; font-weight:800; font-size:19px; color:#fff; margin-top:2px;">Circuit · poids du corps</div></div>
+          <div onclick="closeSession()" style="cursor:pointer; flex:none; width:30px; height:30px; border-radius:9px; background:var(--card2,#141414); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px;">✕</div>
+        </div>
+        <div style="display:flex; gap:14px; align-items:center; margin-top:11px;">
+          ${[[`~${s.totalMin} min`,'durée'],[`${s.rounds} tours`,'circuit'],[`${s.work}s / ${s.rest}s`,'effort / repos']].map(x=>`<div><div style="font-family:'Saira',sans-serif; font-weight:800; font-size:16px; color:#fff;">${x[0]}</div><div style="font-size:9.5px; color:#9a9a9a;">${x[1]}</div></div>`).join('<div style="width:1px; height:26px; background:var(--line,#242424);"></div>')}
+        </div>
+      </div>
+      <div style="overflow:auto; min-height:0; padding:14px 16px;">
+        <div style="font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--accent2,#FF9A3C); margin-bottom:7px;">Échauffement · ~3 min</div>
+        <ul style="margin:0 0 16px; padding-left:17px; color:#cfcfcf; font-size:12.5px; line-height:1.7;">${s.warmup.map(w=>`<li>${w}</li>`).join('')}</ul>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:9px;">
+          <div style="font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--accent2,#FF9A3C);">Le circuit</div>
+          <div style="font-size:10px; color:#8a8a8a;">${s.work}s effort · ${s.rest}s repos</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${s.circuit.map((e,i)=>`
+            <div style="display:flex; align-items:center; gap:12px; background:var(--card2,#141414); border:1px solid var(--line,#242424); border-radius:12px; padding:10px 12px;">
+              <div style="width:26px; height:26px; flex:none; border-radius:8px; background:var(--accent,#FF6B00); color:#160a00; font-family:'Saira',sans-serif; font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center;">${i+1}</div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:13.5px; font-weight:700; color:#fff;">${e.n}</div>
+                <div style="font-size:11px; color:#8a8a8a;">${CAT[e.cat]} · ${e.g}</div>
+              </div>
+              <div style="flex:none; font-family:'Saira',sans-serif; font-weight:800; font-size:13px; color:var(--accent2,#FF9A3C);">${s.work}s</div>
+            </div>`).join('')}
+        </div>
+        <div style="margin-top:10px; font-size:11.5px; color:#9a9a9a; line-height:1.5;">À chaque exercice : <b style="color:#cfcfcf;">${s.work}s d'effort</b> puis ${s.rest}s de repos. ${s.circuit.length} exercices × <b style="color:#cfcfcf;">${s.rounds} tours</b>.</div>
+        <div style="font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--accent2,#FF9A3C); margin:16px 0 7px;">Retour au calme · ~2 min</div>
+        <ul style="margin:0; padding-left:17px; color:#cfcfcf; font-size:12.5px; line-height:1.7;">${s.cooldown.map(c=>`<li>${c}</li>`).join('')}</ul>
+        <div style="margin-top:14px; display:flex; gap:8px; align-items:flex-start; background:${s.tagColor}14; border:1px solid ${s.tagColor}40; border-radius:12px; padding:10px 12px;">
+          <span style="color:${s.tagColor}; font-size:13px; line-height:1.2;">●</span>
+          <div style="font-size:11.5px; color:#cdcdcd; line-height:1.5;">Adaptée à ta forme <b>${fLabel}</b> — ${s.note}</div>
+        </div>
+      </div>
+      <div style="flex:none; display:flex; gap:10px; padding:13px 16px; border-top:1px solid var(--line,#242424);">
+        <div onclick="regenSession()" style="cursor:pointer; flex:1; text-align:center; padding:11px; border-radius:12px; border:1px solid var(--line,#242424); font-size:13px; font-weight:800; color:var(--accent2,#FF9A3C);">↻ Régénérer</div>
+        <div onclick="startSession()" style="cursor:pointer; flex:1; text-align:center; padding:11px; border-radius:12px; background:var(--accent,#FF6B00); color:#160a00; font-size:13px; font-weight:800;">▶ C'est parti</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function overlayHTML(name){
+  const m=VIDEOS[name]; if(!m) return '';
+  return `
+  <div onclick="closeVideo()" style="position:absolute; inset:0; z-index:40; background:rgba(0,0,0,.82); backdrop-filter:blur(4px); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18px;">
+    <div onclick="event.stopPropagation()" style="width:100%; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); border-radius:18px; overflow:hidden; box-shadow:0 24px 60px -16px rgba(0,0,0,.7);">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:13px 15px;">
+        <div style="min-width:0;"><div style="font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent2,#FF9A3C);">Démonstration${m.series?' · série':''}</div><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:16px; color:#fff;">${name}</div></div>
+        <div onclick="closeVideo()" style="cursor:pointer; flex:none; width:30px; height:30px; border-radius:9px; background:var(--card2,#141414); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px;">✕</div>
+      </div>
+      <div style="position:relative; width:100%; aspect-ratio:16/9; background:#000;">
+        <iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/${m.id}?autoplay=1&rel=0&modestbranding=1" title="${name}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute; inset:0; display:block; border:0;"></iframe>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:11px 15px;">
+        <span style="font-size:10.5px; color:#7a7a7a; font-family:'Saira',sans-serif; letter-spacing:.3px;">Démo : ${m.author} · YouTube${m.series?' · couvre la série':''}</span>
+        <a href="https://www.youtube.com/watch?v=${m.id}" target="_blank" rel="noopener" style="font-size:10.5px; color:var(--accent2,#FF9A3C); text-decoration:none; font-weight:700;">Ouvrir ↗</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+// kihon illustration modal — shows the grade's plate(s) from the Kihon Book
+function overlayKihonHTML(kyu){
+  const plates=KIHON_PLATES[kyu]; if(!plates) return '';
+  const g=SYLLABUS.find(x=>x.kyu===kyu); if(!g) return '';
+  const b=belts[g.belt];
+  return `
+  <div onclick="closeKihon()" style="position:absolute; inset:0; z-index:40; background:rgba(0,0,0,.86); backdrop-filter:blur(4px); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14px;">
+    <div onclick="event.stopPropagation()" style="display:flex; flex-direction:column; width:100%; max-height:100%; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); border-radius:18px; overflow:hidden; box-shadow:0 24px 60px -16px rgba(0,0,0,.7);">
+      <div style="display:flex; align-items:center; gap:11px; padding:13px 15px; flex:none;">
+        <div style="width:38px; height:38px; border-radius:11px; background:${b.c}; display:flex; align-items:center; justify-content:center; flex:none; box-shadow:0 0 0 1px rgba(255,255,255,.12) inset;"><span style="font-family:'Noto Sans JP',sans-serif; font-weight:700; font-size:15px; color:${b.t};">${g.kihon.k}</span></div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent2,#FF9A3C);">Kihon · ${g.kyu}</div>
+          <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:16px; color:#fff;">${g.kihon.cat}</div>
+          <div style="font-size:11px; color:#9a9a9a;">${g.kihon.n} techniques · ${g.kihon.stance}</div>
+        </div>
+        <div onclick="closeKihon()" style="cursor:pointer; flex:none; width:30px; height:30px; border-radius:9px; background:var(--card2,#141414); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px;">✕</div>
+      </div>
+      <div style="overflow:auto; min-height:0; background:#fff; padding:8px;">
+        ${plates.map((src,i)=>`<a href="${src}" target="_blank" rel="noopener" style="display:block; text-decoration:none; margin-bottom:${i<plates.length-1?'8px':'0'};"><img src="${src}" alt="${g.kihon.cat} — ${g.kyu}${plates.length>1?` · planche ${i+1}/${plates.length}`:''}" style="display:block; width:100%; border-radius:8px;"></a>`).join('')}
+      </div>
+      <div style="flex:none; padding:9px 15px; display:flex; align-items:center; justify-content:space-between;">
+        <span style="font-size:10px; color:#7a7a7a; font-family:'Saira',sans-serif; letter-spacing:.3px;">Illustration : IFK Kihon (S. Arneil)</span>
+        <span style="font-size:10px; color:var(--accent2,#FF9A3C); font-weight:700;">Touche pour agrandir ↗</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+// profile edit modal — bound to state.edit (inputs write to it on input)
+function editProfileHTML(){
+  const p=state.edit;
+  const lbl=t=>`<div style="font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:#8a8a8a; margin-bottom:5px;">${t}</div>`;
+  return `
+  <div onclick="cancelEditProfile()" style="position:absolute; inset:0; z-index:40; background:rgba(0,0,0,.86); backdrop-filter:blur(4px); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14px;">
+    <div onclick="event.stopPropagation()" style="display:flex; flex-direction:column; width:100%; max-height:100%; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); border-radius:18px; overflow:hidden; box-shadow:0 24px 60px -16px rgba(0,0,0,.7);">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; flex:none; border-bottom:1px solid var(--line,#242424);">
+        <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:17px; color:#fff;">Éditer le profil</div>
+        <div onclick="cancelEditProfile()" style="cursor:pointer; width:30px; height:30px; border-radius:9px; background:var(--card2,#141414); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px;">✕</div>
+      </div>
+      <div style="overflow:auto; min-height:0; padding:16px;">
+        <div style="margin-bottom:12px;">${lbl('Prénom')}<input class="pf-in" value="${esc(p.prenom)}" oninput="state.edit.prenom=this.value"></div>
+        <div style="margin-bottom:12px;">${lbl('Grade')}<select class="pf-in" onchange="state.edit.kyu=this.value">${SYLLABUS.map(g=>`<option value="${esc(g.kyu)}" ${g.kyu===p.kyu?'selected':''}>${g.kyu} · ceinture ${BELT_FR[g.belt]}</option>`).join('')}</select></div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <div style="flex:2;">${lbl('Prochaine compétition')}<input class="pf-in" placeholder="Nom de la compétition" value="${esc(p.comp.event)}" oninput="state.edit.comp.event=this.value"></div>
+          <div style="flex:1;">${lbl('Date')}<input class="pf-in" type="date" value="${esc(p.comp.date)}" oninput="state.edit.comp.date=this.value"></div>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:16px 0 9px;">
+          <div style="font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:#8a8a8a;">Palmarès</div>
+          <div onclick="addPalmares()" style="cursor:pointer; font-size:11.5px; font-weight:700; color:var(--accent2,#FF9A3C);">+ Ajouter</div>
+        </div>
+        ${p.palmares.map((pl,i)=>`
+          <div style="background:var(--card2,#141414); border:1px solid var(--line,#242424); border-radius:12px; padding:10px; margin-bottom:9px;">
+            <div style="display:flex; gap:8px; margin-bottom:8px;">
+              <input class="pf-in" style="flex:2;" placeholder="Compétition" value="${esc(pl.event)}" oninput="state.edit.palmares[${i}].event=this.value">
+              <input class="pf-in" style="flex:1;" inputmode="numeric" placeholder="Année" value="${esc(pl.year)}" oninput="state.edit.palmares[${i}].year=this.value">
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <select class="pf-in" style="flex:1;" onchange="state.edit.palmares[${i}].medal=this.value">${['or','argent','bronze','none'].map(mk=>`<option value="${mk}" ${pl.medal===mk?'selected':''}>${mk==='none'?'Participation':MEDALS[mk].tag}</option>`).join('')}</select>
+              <div onclick="removePalmares(${i})" style="cursor:pointer; font-size:11.5px; font-weight:700; color:#EF4444; padding:0 8px;">Supprimer</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div style="flex:none; display:flex; gap:10px; padding:13px 16px; border-top:1px solid var(--line,#242424);">
+        <div onclick="cancelEditProfile()" style="cursor:pointer; flex:1; text-align:center; padding:11px; border-radius:12px; border:1px solid var(--line,#242424); font-size:13px; font-weight:700; color:#cfcfcf;">Annuler</div>
+        <div onclick="saveEditProfile()" style="cursor:pointer; flex:1; text-align:center; padding:11px; border-radius:12px; background:var(--accent,#FF6B00); color:#160a00; font-size:13px; font-weight:800;">Enregistrer</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function tabbarHTML(d){
+  return d.tabs.map(t=>`
+    <div onclick="${t.go}" style="cursor:pointer; flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">
+      ${iconSVG(t.icon, t.color, 23)}
+      <span style="font-size:9.5px; font-weight:700; color:${t.color};">${t.name}</span>
+    </div>`).join('');
+}
+
+//============================================================
+// photo upload handler
+//============================================================
+function onPhoto(ev){
+  const file = ev.target.files && ev.target.files[0];
+  if(!file) return;
+  if(userPhoto) URL.revokeObjectURL(userPhoto);
+  userPhoto = URL.createObjectURL(file);
+  render();
+}
+
+//============================================================
+// tweak controls
+//============================================================
+function buildTweaks(){
+  const map = { accent:Object.keys(accents), ambiance:Object.keys(ambiances), intensite:Object.keys(intensites) };
+  document.querySelectorAll('.seg').forEach(seg=>{
+    const prop = seg.dataset.prop;
+    seg.innerHTML = map[prop].map(opt=>
+      `<button data-opt="${opt}" class="${props[prop]===opt?'on':''}">${opt}</button>`
+    ).join('');
+    seg.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click',()=>{ props[prop]=b.dataset.opt; render(); });
+    });
+  });
+}
+
+//============================================================
+// main render
+//============================================================
+function render(){
+  const d = renderVals();
+
+  // theme vars on the screen container
+  const screen = document.getElementById('screen');
+  screen.setAttribute('style',
+    `position:relative; width:370px; height:812px; border-radius:44px; overflow:hidden; background:var(--screen,#0D0D0D); ${d.themeVars}`);
+
+  // active view
+  let html = '';
+  if(d.isHome) html = homeView(d);
+  else if(d.isBelt) html = beltView(d);
+  else if(d.isLib) html = libView(d);
+  else if(d.isProfile) html = profileView(d);
+  else if(d.isGlos) html = glossaryView(d);
+  else if(d.isDojo) html = dojoView(d);
+  document.getElementById('view').innerHTML = html;
+
+  // tab bar (theme-aware background)
+  const tb = document.getElementById('tabbar');
+  tb.style.background = 'var(--tabbar,rgba(13,13,13,.92))';
+  tb.style.borderTop = '1px solid var(--line,#2A2A2A)';
+  tb.innerHTML = tabbarHTML(d);
+
+  // inline kata video overlay
+  document.getElementById('overlay').innerHTML = state.player ? playerHTML() : (state.edit ? editProfileHTML() : (state.sessionModal ? sessionModalHTML() : (state.videoModal ? overlayHTML(state.videoModal) : (state.kihonModal ? overlayKihonHTML(state.kihonModal) : ''))));
+
+  // sync tweak button states
+  document.querySelectorAll('.seg').forEach(seg=>{
+    const prop = seg.dataset.prop;
+    seg.querySelectorAll('button').forEach(b=>{
+      b.classList.toggle('on', props[prop]===b.dataset.opt);
+    });
+  });
+}
+
+buildTweaks();
+render();
+</script>
+<!-- DEV live-reload : recharge la page quand index.html change. Inactif hors localhost (no-op en prod). -->
+<script>
+(function(){
+  if(!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return;
+  let last=null;
+  setInterval(async()=>{
+    try{
+      const m=await (await fetch('/__mtime',{cache:'no-store'})).text();
+      if(last===null){ last=m; return; }
+      if(m!==last){ location.reload(); }
+    }catch(e){}
+  },1000);
+})();
+</script>
+</body>
+</html>
