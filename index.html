@@ -84,7 +84,7 @@
       <div style="font-family:'Saira',sans-serif; font-weight:800; font-size:28px; letter-spacing:-.5px; color:#161616;">KyokuTrack</div>
       <div style="font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#FF6B00; border:1px solid #FF6B00; padding:3px 8px; border-radius:6px;">IFK Kyokushin</div>
     </div>
-    <div style="margin-top:10px; font-size:14px; color:#6b6864; line-height:1.55;">Accueil centré sur le <b>suivi de forme</b> et la <b>préparation physique</b>. Touche l'anneau pour faire varier la forme ; la carte <b>« Programme en cours »</b> ouvre la fiche ceinture (vidéo + photo). <b>Tweaks :</b> accent, ambiance et intensité visuelle remodèlent l'ambiance.</div>
+    <div style="margin-top:10px; font-size:14px; color:#6b6864; line-height:1.55;">Accueil centré sur la <b>préparation physique</b> et la <b>compétition</b>. La carte <b>« Programme en cours »</b> ouvre la fiche ceinture (vidéo + photo). <b>Tweaks :</b> accent, ambiance et intensité visuelle remodèlent l'ambiance.</div>
   </div>
 
   <div class="dc-row" style="display:flex; gap:56px; align-items:flex-start;">
@@ -148,53 +148,13 @@ const formeData = {
   bonne:      { label:'Bonne',      pct:74, color:'#22C55E', rgb:'34,197,94',  a:.26, sommeil:'7.2', hrv:58, fc:52, msg:'Bon niveau — séance standard', phys:{title:'Gainage & circuit', sub:'Squats, pompes, planche', min:40, tag:'Standard', tagColor:'#22C55E'} },
   excellente: { label:'Excellente', pct:92, color:'#22C55E', rgb:'34,197,94',  a:.34, sommeil:'8.1', hrv:71, fc:48, msg:'Pic de forme — pousse fort, Osu !', phys:{title:'Explosivité & pliométrie', sub:'Sprints, sauts, médecine-ball', min:45, tag:'Haute', tagColor:'#FF6B00'} },
 };
-const order = ['repos','moderee','bonne','excellente'];
-
-//============================================================
-// Couche d'intégration santé (MOCK pour l'instant).
-// L'app lit la "récupération" via ce provider, jamais en direct.
-// Demain, on emballe l'app en Capacitor et on remplace SEULEMENT
-// le corps de connect()/read() — l'interface ne bouge pas :
-//   • iOS     → @perfood/capacitor-healthkit
-//               (HKQuery : restingHeartRate, heartRateVariabilitySDNN,
-//                sleepAnalysis, activeEnergyBurned, HKWorkout)
-//   • Android → plugin Health Connect (records équivalents)
-// ⚠️ Données sensibles : permission explicite, stockage LOCAL,
-//    jamais envoyées à un serveur sans consentement.
-//============================================================
-const HealthProvider = {
-  source: 'Apple Santé / Health Connect',
-  // demande d'autorisation. MOCK : accordée. Natif : requestAuthorization(...).
-  async connect(){ return true; },
-  // lecture des métriques récentes. MOCK : valeurs plausibles (athlète bien récupéré).
-  // Natif : agrège les derniers échantillons HealthKit / Health Connect.
-  async read(){
-    return { restingHR:54, hrv:62, sleepHours:7.4, activeEnergy:520, workoutsThisWeek:3, ts:Date.now() };
-  },
-};
-const clamp01 = x => Math.max(0, Math.min(1, x));
-// métriques de récupération → niveau de forme (seuils calés sur formeData)
-function formeFromMetrics(m){
-  const hrvS   = clamp01((m.hrv - 33) / (71 - 33));        // VFC : plus haut = mieux
-  const hrS    = clamp01((61 - m.restingHR) / (61 - 48));  // FC repos : plus bas = mieux
-  const sleepS = clamp01((m.sleepHours - 5.2) / (8.1 - 5.2));
-  const score  = 0.45*hrvS + 0.30*hrS + 0.25*sleepS;
-  return score < 0.28 ? 'repos' : score < 0.55 ? 'moderee' : score < 0.80 ? 'bonne' : 'excellente';
-}
-async function connectHealth(){
-  const ok = await HealthProvider.connect();
-  if(!ok) return;
-  const m = await HealthProvider.read();
-  state.health = { connected:true, metrics:m, suggestion:formeFromMetrics(m), source:HealthProvider.source };
-  render();
-}
-function disconnectHealth(){ state.health = { connected:false, metrics:null, suggestion:null, source:null }; render(); }
-function applySuggestedForme(){ if(state.health.suggestion){ state.forme = state.health.suggestion; render(); } }
 
 const belts = {
   blanc:{c:'#E8E8E8',t:'#1a1a1a'}, rouge:{c:'#D0342C',t:'#fff'}, jaune:{c:'#F4C430',t:'#1a1a1a'}, orange:{c:'#FF6B00',t:'#160a00'},
   bleu:{c:'#3B82F6',t:'#fff'}, vert:{c:'#3DA35D',t:'#fff'}, marron:{c:'#7A4A2B',t:'#fff'}, noir:{c:'#1A1A1A',t:'#fff'},
 };
+// hex (#RRGGBB) → "r,g,b" pour composer des rgba()
+const hexRgb = h => { h=String(h).replace('#',''); return [0,2,4].map(i=>parseInt(h.substr(i,2),16)).join(','); };
 
 //============================================================
 // Official IFK syllabus — sourced from the user's documents
@@ -238,6 +198,7 @@ const SYLLABUS = [
   { kyu:'1er kyu', belt:'marron', kata:['Yantsu','Tsuki no Kata'],                  kihon:{cat:'Ryutoken', k:'龍頭拳', n:12, stance:'Sanchin dachi'} },
   { kyu:'1er dan', belt:'noir',   kata:['Tensho','Saiha'],                          kihon:{cat:'Haito', k:'背刀', n:14, stance:'Sanchin dachi'} },
   { kyu:'2e dan',  belt:'noir',   kata:['Kanku Dai','Gekisai Sho','Seienchin'],     kihon:{cat:'Toho / Keiko', k:'刀峰', n:10, stance:'Sanchin dachi'} },
+  { kyu:'3e dan',  belt:'noir',   kata:['Garyu','Seipai','Sushiho'],                kihon:null },   // kata avancés ; pas de planche kihon dédiée dans le Kihon Book source
 ];
 
 // ---- profil du pratiquant (éditable + persistant via localStorage) ----
@@ -547,7 +508,7 @@ function removePalmares(i){ state.edit.palmares.splice(i,1); renderEditOverlay()
 function renderEditOverlay(){ document.getElementById('overlay').innerHTML = editProfileHTML(); }
 
 // ---- state + props ----
-const state = { forme:'bonne', view:'home', physDone:false, playing:false, libTab:'kata', videoLoaded:false, videoModal:null, kihonModal:null, edit:null, session:null, sessionModal:false, player:null, health:{ connected:false, metrics:null, suggestion:null, source:null } };
+const state = { forme:'bonne', intensity:2, view:'home', physDone:false, playing:false, libTab:'kata', videoLoaded:false, videoModal:null, kihonModal:null, edit:null, session:null, sessionModal:false, player:null };
 const props = { accent:'Or', ambiance:'Dojo noir', intensite:'Dramatique' };
 
 // photo perso déposée par l'utilisateur (prioritaire sur l'illustration de réf.).
@@ -555,10 +516,10 @@ let userPhoto = null;
 
 //============================================================
 // Générateur de séance — circuit training au POIDS DU CORPS,
-// 15–20 min, adapté à l'état de forme (repos→excellente).
+// 15–20 min, tiré AU HASARD à chaque génération.
 // Exercices sans matériel ; saveur Kyokushin (kihon à l'ombre).
 // cat = catégorie (1 exo tiré par catégorie pour un circuit complet).
-// min = niveau de forme minimum requis (0 repos … 3 excellente).
+// min = difficulté de l'exercice (0 accessible … 3 explosif).
 //============================================================
 const EXOS = {
   jambes: [
@@ -599,37 +560,40 @@ const EXOS = {
     { n:'Sprawl (défense kumite)',min:2, g:'descente explosive' },
   ],
 };
-// paramètres du circuit selon la forme du jour.
+// 5 niveaux d'INTENSITÉ choisis par l'utilisateur (state.intensity = index 0..4).
 // rounds × 5 exos × (work+rest) + 5' d'échauffement/retour au calme → total visé 15–20 min.
-const SESSION_PARAMS = {
-  repos:      { rounds:2, work:30, rest:30, tag:'Récup',    tagColor:'#3B82F6', note:'Récupération active : reste fluide, respire, zéro forcing.' },   // ~15 min
-  moderee:    { rounds:3, work:30, rest:20, tag:'Modérée',  tagColor:'#FF9A3C', note:'Tempo maîtrisé, technique propre avant la vitesse.' },           // ~18 min
-  bonne:      { rounds:3, work:35, rest:20, tag:'Standard', tagColor:'#22C55E', note:'Engage-toi pleinement en gardant une forme nette.' },           // ~19 min
-  excellente: { rounds:4, work:30, rest:12, tag:'Haute',    tagColor:'#FF6B00', note:'Jour de pic : intervalles courts et explosifs. Osu !' },        // ~19 min
-};
+// lvl = difficulté max des exercices tirés (0 accessible … 3 explosif), pour garder un circuit cohérent.
+const SESSION_LEVELS = [
+  { tag:'Récup',   lvl:0, rounds:2, work:30, rest:30, tagColor:'#3B82F6', note:'Récupération active : reste fluide, respire, zéro forcing.' },  // ~15 min
+  { tag:'Léger',   lvl:1, rounds:3, work:30, rest:25, tagColor:'#22C55E', note:'Tempo tranquille, technique propre avant la vitesse.' },        // ~18 min
+  { tag:'Modéré',  lvl:2, rounds:3, work:35, rest:20, tagColor:'#FF9A3C', note:'Engage-toi en gardant une forme nette.' },                     // ~19 min
+  { tag:'Soutenu', lvl:3, rounds:4, work:30, rest:15, tagColor:'#FF6B00', note:'Rythme élevé, garde le gainage du début à la fin.' },          // ~20 min
+  { tag:'Intense', lvl:3, rounds:4, work:35, rest:12, tagColor:'#EF4444', note:'Intervalles courts et explosifs. Osu !' },                     // ~20 min
+];
 const CAT_LABEL = { jambes:'Jambes', haut:'Haut du corps', gainage:'Gainage', cardio:'Cardio', kyokushin:'Kyokushin' };
 const SESSION_WARMUP  = ['Rotations articulaires (cou→chevilles)','Talons-fesses + montées de genoux','10 squats lents','Quelques mae geri souples'];
 const SESSION_COOLDOWN = ['Étirements jambes (ischios, quadris, mollets)','Étirement épaules & dos','Respiration profonde, retour au calme'];
 const pick = arr => arr[Math.floor(Math.random()*arr.length)];
 
-// construit une séance neuve à partir de la forme courante.
-function buildSession(forme){
-  const lvl = order.indexOf(forme);                 // 0..3
-  const P = SESSION_PARAMS[forme] || SESSION_PARAMS.bonne;
+// construit une séance neuve à l'intensité choisie (exercices tirés au hasard).
+function buildSession(){
+  const P = SESSION_LEVELS[state.intensity] || SESSION_LEVELS[2];
   const order2 = ['jambes','haut','gainage','cardio','kyokushin'];
   const circuit = order2.map(cat=>{
-    const ok = EXOS[cat].filter(e=>e.min<=lvl);
+    const ok = EXOS[cat].filter(e=>e.min<=P.lvl);
     const e = pick(ok.length?ok:EXOS[cat]);
     return { cat, n:e.n, g:e.g };
   });
   const circuitSec = P.rounds * circuit.length * (P.work + P.rest);
   const totalMin = Math.round((180 + circuitSec + 120) / 60);   // échauffement 3' + circuit + retour au calme 2'
-  return { forme, tag:P.tag, tagColor:P.tagColor, note:P.note, rounds:P.rounds, work:P.work, rest:P.rest,
+  return { tag:P.tag, tagColor:P.tagColor, note:P.note, rounds:P.rounds, work:P.work, rest:P.rest,
            circuit, warmup:SESSION_WARMUP, cooldown:SESSION_COOLDOWN, totalMin };
 }
-function generateSession(){ state.session = buildSession(state.forme); state.sessionModal = true; render(); }
-function regenSession(){ state.session = buildSession(state.forme); render(); }
-function openSession(){ if(!state.session) state.session = buildSession(state.forme); state.sessionModal = true; render(); }
+// l'utilisateur choisit l'intensité ; si une séance existe déjà, on la régénère à la nouvelle intensité.
+function setIntensity(i){ state.intensity = i; if(state.session) state.session = buildSession(); render(); }
+function generateSession(){ state.session = buildSession(); state.sessionModal = true; render(); }
+function regenSession(){ state.session = buildSession(); render(); }
+function openSession(){ if(!state.session) state.session = buildSession(); state.sessionModal = true; render(); }
 function closeSession(){ state.sessionModal = false; render(); }
 
 //============================================================
@@ -704,7 +668,6 @@ function daysUntil(dateStr){
 }
 
 // ---- handlers ----
-function cycleForme(){ const i=order.indexOf(state.forme); state.forme=order[(i+1)%4]; render(); }
 function togglePhys(){ state.physDone=!state.physDone; render(); }
 function togglePlay(){ state.playing=!state.playing; render(); }
 function goHome(){ state.view='home'; state.videoModal=null; state.kihonModal=null; render(); }
@@ -725,17 +688,7 @@ function renderVals(){
 
   const themeVars = `--accent:${AC.a};--accent2:${AC.a2};--accentDk:${AC.dk};--screen:${AM.screen};--card:${AM.card};--card2:${AM.card2};--line:${AM.line};--tabbar:${AM.tabbar};--wmHero:${IN.wmHero};--wmCard:${IN.wmCard};`;
 
-  // health-derived display: when connected, hero metrics are LIVE (from the provider)
-  const H = state.health;
-  const sommeil = (H.connected && H.metrics) ? H.metrics.sleepHours.toFixed(1) : f.sommeil;
-  const hrv     = (H.connected && H.metrics) ? H.metrics.hrv : f.hrv;
-  const fc      = (H.connected && H.metrics) ? H.metrics.restingHR : f.fc;
-  const sug     = H.suggestion ? formeData[H.suggestion] : null;
-  const sugDiffers = H.connected && H.suggestion && H.suggestion !== state.forme;
 
-  const glowA = Math.min(.9, f.a * IN.mul).toFixed(2);
-  const formeGlow = `rgba(${f.rgb},${glowA})`;
-  const formeRingBg = `conic-gradient(${f.color} ${(f.pct*3.6).toFixed(1)}deg, var(--line,#242424) 0deg)`;
   const ph=f.phys, pd=state.physDone;
 
   // ---- compte à rebours compétition (date éditable dans le profil) ----
@@ -768,6 +721,8 @@ function renderVals(){
   const curGrade=SYLLABUS[curGradeIdx];
   const curBelt=belts[curGrade.belt];
   const beltName=BELT_FR[curGrade.belt];
+  // dégradé d'ambiance (Accueil + Profil) = couleur de la ceinture du pratiquant → change avec le grade
+  const beltGlow=`rgba(${hexRgb(curBelt.c)}, ${Math.min(.9, .34 * IN.mul).toFixed(2)})`;
   const statusOf=(i)=> i<curGradeIdx?'Acquis':(i===curGradeIdx?'En cours':'À venir');
 
   // ---- page progression : les 2 prochains grades, checklist réelle + persistée ----
@@ -775,9 +730,11 @@ function renderVals(){
   const gradeItems=(g)=>{
     const items=[];
     g.kata.forEach(k=>{ const m=KATA[k]||{k:'型'}; items.push({type:'Kata', nom:k, jp:m.k||'型', hasVid:!!VIDEOS[k]}); });
-    const stMeta=STANCES[g.kihon.stance]||{jp:''};
-    items.push({type:'Posture', nom:g.kihon.stance, jp:stMeta.jp||'', hasVid:false});
-    (KIHON_DETAIL[g.kyu]||[g.kihon.cat]).forEach(mv=>{ items.push({type:'Kihon', nom:mv, jp:kihonKanji(mv), hasVid:false, isKihon:true}); });
+    if(g.kihon){
+      const stMeta=STANCES[g.kihon.stance]||{jp:''};
+      items.push({type:'Posture', nom:g.kihon.stance, jp:stMeta.jp||'', hasVid:false});
+      (KIHON_DETAIL[g.kyu]||[g.kihon.cat]).forEach(mv=>{ items.push({type:'Kihon', nom:mv, jp:kihonKanji(mv), hasVid:false, isKihon:true}); });
+    }
     return items.map(it=>{ const key=techKey(g.kyu, it.type, it.nom); return {...it, key, done:!!progress[key]}; });
   };
   const nextGrades=[];
@@ -786,7 +743,7 @@ function renderVals(){
     nextGrades.push({
       kyu:g.kyu, beltColor:belts[g.belt].c, beltText:belts[g.belt].t, beltName:BELT_FR[g.belt],
       items, done, total:items.length, hasPlate:!!KIHON_PLATES[g.kyu],
-      kihonCat:g.kihon.cat, kihonN:(KIHON_DETAIL[g.kyu]||[]).length, stance:g.kihon.stance,
+      hasKihon:!!g.kihon, kihonCat:g.kihon?g.kihon.cat:'', kihonN:(KIHON_DETAIL[g.kyu]||[]).length, stance:g.kihon?g.kihon.stance:'',
     });
   }
   const progTotal=nextGrades.reduce((a,g)=>a+g.total,0);
@@ -800,26 +757,28 @@ function renderVals(){
   const pctOf=(name)=>{ let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0; return 48 + h%43; }; // 48..90
   const gradeTech=[];
   curGrade.kata.forEach(k=>{ const m=KATA[k]||{k:'型'}; gradeTech.push({jp:m.k||'型', nom:k, type:'Kata', pct:pctOf(k)}); });
-  gradeTech.push({jp:curGrade.kihon.k, nom:curGrade.kihon.cat, type:'Kihon', pct:pctOf(curGrade.kihon.cat)});
-  const stMeta=STANCES[curGrade.kihon.stance]||{jp:'', desc:''};
-  gradeTech.push({jp:stMeta.jp, nom:curGrade.kihon.stance, type:'Posture', pct:pctOf(curGrade.kihon.stance)});
+  const refStance=curGrade.kihon ? curGrade.kihon.stance : null;   // null si le grade n'a pas de kihon (ex. 3e dan)
+  const stMeta=STANCES[refStance]||{jp:'', desc:''};
+  if(curGrade.kihon){
+    gradeTech.push({jp:curGrade.kihon.k, nom:curGrade.kihon.cat, type:'Kihon', pct:pctOf(curGrade.kihon.cat)});
+    gradeTech.push({jp:stMeta.jp, nom:curGrade.kihon.stance, type:'Posture', pct:pctOf(curGrade.kihon.stance)});
+  }
   const beltTech=gradeTech.map(t=>({...t, barColor:t.pct>=80?'#22C55E':(t.pct>=60?'var(--accent2,#FF9A3C)':'#EF4444')}));
-  const beltPct=Math.round(beltTech.reduce((a,b)=>a+b.pct,0)/beltTech.length);
+  const beltPct=gradeTech.length?Math.round(beltTech.reduce((a,b)=>a+b.pct,0)/beltTech.length):0;
 
   // vidéo de démo = 1er kata du grade ayant une vidéo intégrée ; sinon recherche YouTube
   let beltVideo=null, beltVideoKata=null;
   for(const k of curGrade.kata){ if(VIDEOS[k]){ beltVideo={...VIDEOS[k], title:VIDEOS[k].title||k}; beltVideoKata=k; break; } }
-  const searchKata=curGrade.kata[0]||curGrade.kihon.cat;
+  const searchKata=curGrade.kata[0]||(curGrade.kihon&&curGrade.kihon.cat)||'';
 
   // posture de référence : illustration bundlée seulement si on l'a pour cette stance
-  const refStance=curGrade.kihon.stance;
-  const refImg=STANCE_IMG[refStance]||null;
+  const refImg=refStance?(STANCE_IMG[refStance]||null):null;
   const photoSrc=userPhoto || refImg;          // photo perso > illustration > rien
   const isBundledRef=!userPhoto && !!refImg;    // affiche l'attribution Kihon Book
   const programSub=`Kata : ${curGrade.kata.join(' · ')}`;
 
   const libEntries=[
-    {key:'kata', name:'Kata', sub:'17 kata · du 10e kyu au 3e dan', icon:ICON_FIST, iconBg:'#1d2a1d', iconColor:'#22C55E', open:"goLib('kata')"},
+    {key:'kata', name:'Kata', sub:'20 kata · du 10e kyu au 3e dan', icon:ICON_FIST, iconBg:'#1d2a1d', iconColor:'#22C55E', open:"goLib('kata')"},
     {key:'kihon', name:'Kihon', sub:'Tsuki · Geri · Uke · Dachi…', icon:ICON_FOOT, iconBg:'#2a2012', iconColor:'var(--accent2,#FF9A3C)', open:"goLib('kihon')"},
     {key:'glos', name:'Glossaire & Osu no seishin', sub:'Vocabulaire japonais → français', icon:'M4 5h12a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2zM4 5v12M18 7h2v12H8', iconBg:'#1c2330', iconColor:'#3B82F6', open:"goGlos()"},
   ];
@@ -893,7 +852,6 @@ function renderVals(){
     {label:'Glossaire japonais → français', icon:'M4 5h12a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2zM4 5v12M18 7h2v12H8', onclick:'goGlos()'},
     {label:'Objectifs & rappels', icon:'M12 8v4l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'},
     {label:'Notifications', icon:'M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0'},
-    {label:'Données santé & HRV', icon:'M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z'},
     {label:'Confidentialité', icon:'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z'},
   ];
 
@@ -901,12 +859,9 @@ function renderVals(){
     themeVars,
     prenom:profile.prenom, club:CLUB,
     gradeLabel:profile.kyu, gradeColor:curBelt.c, gradeText:curBelt.t, beltColor:curBelt.c, beltName,
-    sommeil, hrv, fc,
-    healthConnected:H.connected, healthSource:H.source, healthMetrics:H.metrics,
-    sugLabel:sug?sug.label:'', sugColor:sug?sug.color:'#8a8a8a', sugDiffers,
-    formeLabel:f.label, formePct:f.pct, formeColor:f.color, formeMsg:f.msg, formeRingBg, formeGlow,
+    beltGlow,
     phaseLabel, phases, compEvent, compLabel, hasComp,
-    session:state.session,
+    session:state.session, intensity:state.intensity, levels:SESSION_LEVELS,
     physTitle:ph.title, physSub:ph.sub, physMin:ph.min, physTag:ph.tag, physTagColor:ph.tagColor,
     physCheck:pd?'✓':'', physCheckBg:pd?'var(--accent,#FF6B00)':'transparent', physCheckBorder:pd?'var(--accent,#FF6B00)':'#3a3a3a',
     physStrike:pd?'line-through':'none', physTitleColor:pd?'#6f6f6f':'#fff',
@@ -931,52 +886,13 @@ function homeView(d){
   return `
   <div>
     <!-- hero forme -->
-    <div onclick="cycleForme()" style="cursor:pointer; position:relative; padding:18px 22px 24px; background:radial-gradient(120% 90% at 50% 0%, ${d.formeGlow} 0%, var(--screen,#0D0D0D) 62%); overflow:hidden;">
+    <div style="position:relative; padding:18px 22px 24px; background:radial-gradient(120% 90% at 50% 0%, ${d.beltGlow} 0%, var(--screen,#0D0D0D) 62%); overflow:hidden;">
       <img src="assets/kanji.png" style="position:absolute; top:6px; left:50%; transform:translateX(-50%); height:320px; opacity:var(--wmHero,.06); pointer-events:none;">
       <div style="display:flex; align-items:center; justify-content:space-between; position:relative;">
         <div><div style="font-size:13px; color:#cfcfcf; font-weight:600;">Osu, ${d.prenom}</div><div style="font-size:11px; color:#9a9a9a;">${d.club}</div></div>
         <div style="display:inline-flex; align-items:center; gap:6px; background:${d.gradeColor}; color:${d.gradeText}; font-weight:700; font-size:12px; padding:5px 11px; border-radius:20px;">${d.gradeLabel}</div>
       </div>
-      <div style="position:relative; margin:14px auto 0; width:200px; height:200px; border-radius:50%; background:${d.formeRingBg}; display:flex; align-items:center; justify-content:center; box-shadow:0 0 40px -8px ${d.formeGlow};">
-        <div style="width:164px; height:164px; border-radius:50%; background:var(--screen,#0D0D0D); display:flex; flex-direction:column; align-items:center; justify-content:center;">
-          <div style="font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#8a8a8a;">Forme</div>
-          <div style="font-family:'Saira',sans-serif; font-weight:800; font-size:52px; line-height:.9; color:${d.formeColor}; margin:2px 0;">${d.formePct}</div>
-          <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:16px; color:#fff;">${d.formeLabel}</div>
-        </div>
-      </div>
-      <div style="position:relative; text-align:center; margin-top:13px; font-size:14px; font-weight:700; color:${d.formeColor};">${d.formeMsg}</div>
-      <div style="position:relative; display:flex; justify-content:center; gap:16px; margin-top:11px;">
-        <div style="text-align:center;"><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:17px; color:#fff;">${d.sommeil}h</div><div style="font-size:10px; color:#8a8a8a;">Sommeil</div></div>
-        <div style="width:1px; background:var(--line,#242424);"></div>
-        <div style="text-align:center;"><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:17px; color:#fff;">${d.hrv}</div><div style="font-size:10px; color:#8a8a8a;">HRV ms</div></div>
-        <div style="width:1px; background:var(--line,#242424);"></div>
-        <div style="text-align:center;"><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:17px; color:#fff;">${d.fc}</div><div style="font-size:10px; color:#8a8a8a;">FC repos</div></div>
-      </div>
-    </div>
-
-    <!-- santé / récupération -->
-    <div style="margin:6px 18px 0; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); border-radius:18px; padding:14px 16px;">
-      ${d.healthConnected ? `
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-        <div style="display:flex; align-items:center; gap:9px; min-width:0;">
-          <div style="width:30px; height:30px; border-radius:9px; background:#1d2a1d; display:flex; align-items:center; justify-content:center; flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.5 1-1a5.5 5.5 0 0 0 0-7.9z"/></svg></div>
-          <div style="min-width:0;"><div style="font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#22C55E;">Santé · connecté</div><div style="font-size:11.5px; color:#9a9a9a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.healthSource} · synchronisé</div></div>
-        </div>
-        <div onclick="disconnectHealth()" style="cursor:pointer; flex:none; font-size:10.5px; color:#7a7a7a; font-weight:700;">Déconnecter</div>
-      </div>
-      ${d.sugDiffers ? `
-      <div style="margin-top:12px; display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--card2,#141414); border:1px solid var(--line,#242424); border-radius:13px; padding:10px 12px;">
-        <div style="min-width:0;"><div style="font-size:10px; color:#8a8a8a;">Forme suggérée d'après ta récup'</div><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:${d.sugColor};">${d.sugLabel}</div></div>
-        <div onclick="applySuggestedForme()" style="cursor:pointer; flex:none; background:var(--accent,#FF6B00); color:#160a00; font-weight:800; font-size:12px; padding:8px 14px; border-radius:20px;">Appliquer</div>
-      </div>` : `
-      <div style="margin-top:10px; font-size:11px; color:#7a7a7a; display:flex; gap:6px; align-items:flex-start;"><span style="color:${d.formeColor};">●</span><span>Anneau à jour depuis Santé — ta forme du jour colle à ta récupération.</span></div>`}
-      ` : `
-      <div style="display:flex; align-items:center; gap:11px;">
-        <div style="width:34px; height:34px; border-radius:10px; background:var(--card2,#141414); border:1px solid var(--line,#242424); display:flex; align-items:center; justify-content:center; flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent2,#FF9A3C)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.5 1-1a5.5 5.5 0 0 0 0-7.9z"/></svg></div>
-        <div style="flex:1; min-width:0;"><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#fff;">Connecter Santé</div><div style="font-size:11.5px; color:#8a8a8a; line-height:1.4;">VFC, FC repos &amp; sommeil → suggèrent ta forme automatiquement.</div></div>
-      </div>
-      <div onclick="connectHealth()" style="cursor:pointer; margin-top:12px; text-align:center; background:var(--accent,#FF6B00); color:#160a00; font-weight:800; font-size:13px; padding:11px; border-radius:13px;">Connecter Apple Santé / Health Connect</div>
-      `}
+      <div style="height:214px;" aria-hidden="true"></div>
     </div>
 
     <!-- préparation compétition -->
@@ -1074,7 +990,7 @@ function beltView(d){
           <div style="flex:1; min-width:0;">
             <div style="font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#8a8a8a;">${gi===0?'Prochain grade':'Ensuite'}</div>
             <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:15px; color:#fff;">Ceinture ${g.beltName} · ${g.kyu}</div>
-            <div style="font-size:10.5px; color:#8a8a8a;">Kihon : ${g.kihonCat} (${g.kihonN}) · posture ${g.stance}</div>
+            <div style="font-size:10.5px; color:#8a8a8a;">${g.hasKihon?`Kihon : ${g.kihonCat} (${g.kihonN}) · posture ${g.stance}`:`${g.total} kata avancés`}</div>
           </div>
           ${g.hasPlate?`<div onclick="openKihon('${g.kyu}')" style="cursor:pointer; flex:none; display:inline-flex; align-items:center; gap:5px; background:var(--card2,#161616); border:1px solid var(--line,#242424); border-radius:20px; padding:6px 10px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent2,#FF9A3C)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span style="font-size:10.5px; font-weight:700; color:var(--accent2,#FF9A3C);">Planche</span></div>`:''}
           <div style="font-family:'Saira',sans-serif; font-weight:700; font-size:13px; color:${g.done===g.total?'#22C55E':'var(--accent2,#FF9A3C)'}; flex:none; width:38px; text-align:right;">${g.done}/${g.total}</div>
@@ -1131,10 +1047,10 @@ function profileView(d){
   return `
   <div>
     <!-- header -->
-    <div style="position:relative; padding:20px 22px 22px; overflow:hidden; background:radial-gradient(120% 90% at 50% 0%, ${d.formeGlow} 0%, var(--screen,#0D0D0D) 60%);">
+    <div style="position:relative; padding:20px 22px 22px; overflow:hidden; background:radial-gradient(120% 90% at 50% 0%, ${d.beltGlow} 0%, var(--screen,#0D0D0D) 60%);">
       <img src="assets/kanji.png" style="position:absolute; top:-6px; right:-14px; height:200px; opacity:var(--wmHero,.06); pointer-events:none;">
       <div style="position:relative; display:flex; align-items:center; gap:15px;">
-        <div style="width:74px; height:74px; border-radius:22px; flex:none; background:linear-gradient(135deg,var(--accent,#FF6B00),var(--accentDk,#2a1d12)); display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 1px rgba(255,255,255,.12) inset, 0 8px 22px -8px ${d.formeGlow};">
+        <div style="width:74px; height:74px; border-radius:22px; flex:none; background:linear-gradient(135deg,var(--accent,#FF6B00),var(--accentDk,#2a1d12)); display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 1px rgba(255,255,255,.12) inset, 0 8px 22px -8px ${d.beltGlow};">
           <span style="font-family:'Saira',sans-serif; font-weight:800; font-size:30px; color:#fff;">${d.prenom.charAt(0)}</span>
         </div>
         <div style="flex:1; min-width:0;">
@@ -1241,6 +1157,16 @@ function compCardHTML(d){
       <div style="display:flex; gap:4px; margin-top:13px;">
         ${d.phases.map(p=>`<div style="flex:${p.flex};"><div style="height:6px; border-radius:99px; background:${p.bg};"></div><div style="font-size:8.5px; color:${p.txt}; margin-top:4px; font-weight:600; text-align:center;">${p.name}</div></div>`).join('')}
       </div>
+      <!-- choix de l'intensité (5 niveaux) -->
+      <div style="margin-top:15px;">
+        <div style="font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--accent2,#FF9A3C); margin-bottom:7px;">Intensité de la séance</div>
+        <div style="display:flex; gap:6px;">
+          ${d.levels.map((L,i)=>`<div onclick="setIntensity(${i})" style="flex:1; cursor:pointer; text-align:center; padding:8px 2px; border-radius:11px; border:1px solid ${i===d.intensity?L.tagColor:'var(--line,#242424)'}; background:${i===d.intensity?L.tagColor+'24':'var(--card2,#141414)'};">
+            <div style="font-family:'Saira',sans-serif; font-weight:800; font-size:15px; line-height:1; color:${i===d.intensity?L.tagColor:'#8a8a8a'};">${i+1}</div>
+            <div style="font-size:8px; font-weight:700; margin-top:3px; color:${i===d.intensity?L.tagColor:'#6f6f6f'};">${L.tag}</div>
+          </div>`).join('')}
+        </div>
+      </div>
       ${d.session ? `
         <div onclick="openSession()" style="cursor:pointer; margin-top:14px; display:flex; align-items:center; gap:12px; background:var(--card2,#141414); border:1px solid var(--line,#242424); border-radius:14px; padding:12px 13px;">
           <div style="width:40px; height:40px; border-radius:11px; flex:none; background:${d.session.tagColor}22; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${d.session.tagColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div>
@@ -1255,7 +1181,7 @@ function compCardHTML(d){
       ` : `
         <div onclick="generateSession()" style="cursor:pointer; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:9px; padding:13px; border-radius:14px; background:var(--accent,#FF6B00); color:#160a00; font-size:13.5px; font-weight:800;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#160a00" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>Générer une séance (15–20 min)</div>
       `}
-      <div style="margin-top:8px; font-size:11px; color:#7a7a7a; display:flex; gap:6px; align-items:flex-start;"><span style="color:${d.formeColor};">●</span><span>Circuit au poids du corps, intensité calée sur ta forme du jour (${d.formeLabel}).</span></div>
+      <div style="margin-top:8px; font-size:11px; color:#7a7a7a; display:flex; gap:6px; align-items:flex-start;"><span style="color:var(--accent,#FF6B00);">●</span><span>Circuit au poids du corps : exercices tirés au hasard à l'intensité choisie.</span></div>
     </div>`;
 }
 
@@ -1392,7 +1318,6 @@ function playerHTML(){
 function sessionModalHTML(){
   const s=state.session; if(!s) return '';
   const CAT=CAT_LABEL;
-  const fLabel=(formeData[s.forme]||{}).label||'';
   return `
   <div onclick="closeSession()" style="position:absolute; inset:0; z-index:40; background:rgba(0,0,0,.86); backdrop-filter:blur(4px); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14px;">
     <div onclick="event.stopPropagation()" style="display:flex; flex-direction:column; width:100%; max-height:100%; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); border-radius:18px; overflow:hidden; box-shadow:0 24px 60px -16px rgba(0,0,0,.7);">
@@ -1429,7 +1354,7 @@ function sessionModalHTML(){
         <ul style="margin:0; padding-left:17px; color:#cfcfcf; font-size:12.5px; line-height:1.7;">${s.cooldown.map(c=>`<li>${c}</li>`).join('')}</ul>
         <div style="margin-top:14px; display:flex; gap:8px; align-items:flex-start; background:${s.tagColor}14; border:1px solid ${s.tagColor}40; border-radius:12px; padding:10px 12px;">
           <span style="color:${s.tagColor}; font-size:13px; line-height:1.2;">●</span>
-          <div style="font-size:11.5px; color:#cdcdcd; line-height:1.5;">Adaptée à ta forme <b>${fLabel}</b> — ${s.note}</div>
+          <div style="font-size:11.5px; color:#cdcdcd; line-height:1.5;">${s.note}</div>
         </div>
       </div>
       <div style="flex:none; display:flex; gap:10px; padding:13px 16px; border-top:1px solid var(--line,#242424);">
