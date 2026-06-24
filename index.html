@@ -713,6 +713,7 @@ function goLib(tab){ state.view='lib'; state.libTab=tab||'kata'; state.videoModa
 function goProfile(){ state.view='profile'; state.videoModal=null; state.kihonModal=null; render(); }
 function goGlos(){ state.view='glos'; state.videoModal=null; state.kihonModal=null; render(); }
 function goDojo(){ state.view='dojo'; state.videoModal=null; state.kihonModal=null; render(); }
+function goComp(){ state.view='comp'; state.videoModal=null; state.kihonModal=null; render(); }
 
 // ---- derived values (port of renderVals) ----
 function renderVals(){
@@ -829,6 +830,7 @@ function renderVals(){
     {name:'Kata',color:(v==='lib'&&state.libTab==='kata')?accActive:'#505050',icon:ICON_FIST,go:"goLib('kata')"},
     {name:'Kihon',color:(v==='lib'&&state.libTab==='kihon')?accActive:'#505050',icon:ICON_FOOT,go:"goLib('kihon')"},
     {name:'Grade',color:v==='belt'?accActive:'#505050',icon:'M4 5h16v15H4zM4 9h16M9 3v4M15 3v4',go:"goBelt()"},
+    {name:'Compétition',color:v==='comp'?accActive:'#505050',icon:'M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0zM7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3',go:"goComp()"},
     {name:'Profil',color:v==='profile'?accActive:'#505050',icon:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21a7 7 0 0 1 14 0',go:"goProfile()"},
   ];
 
@@ -916,7 +918,7 @@ function renderVals(){
     libEntries, libList, libTabs,
     beltLadder, profileStats, palmares, settingsRows,
     dojoRanked, dojoFeed, dojoCount,
-    isHome:v==='home', isBelt:v==='belt', isLib:v==='lib', isProfile:v==='profile', isGlos:v==='glos', isDojo:v==='dojo',
+    isHome:v==='home', isBelt:v==='belt', isLib:v==='lib', isProfile:v==='profile', isGlos:v==='glos', isDojo:v==='dojo', isComp:v==='comp',
     tabs,
   };
 }
@@ -978,32 +980,7 @@ function homeView(d){
     </div>
 
     <!-- préparation compétition -->
-    <div style="margin:6px 18px 0; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); border-radius:18px; padding:15px 16px;">
-      <div style="display:flex; align-items:center; justify-content:space-between;">
-        <div><div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent,#FF6B00);">Préparation compétition</div><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:16px; color:#fff; margin-top:2px;">${d.compEvent}</div></div>
-        <div style="text-align:right;">${d.hasComp
-          ? `<div style="font-family:'Saira',sans-serif; font-weight:800; font-size:24px; color:#fff; line-height:1;">${d.compLabel}</div><div style="font-size:10px; color:var(--accent2,#FF9A3C);">${d.phaseLabel}</div>`
-          : `<div onclick="openEditProfile()" style="cursor:pointer; display:inline-block; font-size:11px; font-weight:800; color:#160a00; background:var(--accent2,#FF9A3C); padding:6px 11px; border-radius:9px;">+ Ajouter la date</div>`}</div>
-      </div>
-      <div style="display:flex; gap:4px; margin-top:13px;">
-        ${d.phases.map(p=>`<div style="flex:${p.flex};"><div style="height:6px; border-radius:99px; background:${p.bg};"></div><div style="font-size:8.5px; color:${p.txt}; margin-top:4px; font-weight:600; text-align:center;">${p.name}</div></div>`).join('')}
-      </div>
-      ${d.session ? `
-        <div onclick="openSession()" style="cursor:pointer; margin-top:14px; display:flex; align-items:center; gap:12px; background:var(--card2,#141414); border:1px solid var(--line,#242424); border-radius:14px; padding:12px 13px;">
-          <div style="width:40px; height:40px; border-radius:11px; flex:none; background:${d.session.tagColor}22; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${d.session.tagColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div>
-          <div style="flex:1; min-width:0;">
-            <span style="font-size:9px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:${d.session.tagColor};">Séance prête · ${d.session.tag}</span>
-            <div style="font-size:14px; font-weight:700; color:#fff;">Circuit · poids du corps</div>
-            <div style="font-size:11.5px; color:#8a8a8a;">${d.session.circuit.length} exos · ${d.session.rounds} tours · ~${d.session.totalMin} min</div>
-          </div>
-          <div style="font-size:16px; color:#5a5a5a;">›</div>
-        </div>
-        <div onclick="generateSession()" style="cursor:pointer; margin-top:9px; text-align:center; padding:10px; border-radius:12px; border:1px solid var(--line,#242424); font-size:12.5px; font-weight:800; color:var(--accent2,#FF9A3C);">↻ Générer une autre séance</div>
-      ` : `
-        <div onclick="generateSession()" style="cursor:pointer; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:9px; padding:13px; border-radius:14px; background:var(--accent,#FF6B00); color:#160a00; font-size:13.5px; font-weight:800;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#160a00" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>Générer une séance (15–20 min)</div>
-      `}
-      <div style="margin-top:8px; font-size:11px; color:#7a7a7a; display:flex; gap:6px; align-items:flex-start;"><span style="color:${d.formeColor};">●</span><span>Circuit au poids du corps, intensité calée sur ta forme du jour (${d.formeLabel}).</span></div>
-    </div>
+    ${compCardHTML(d)}
 
     <!-- programme en cours · ceinture -->
     <div onclick="goBelt()" style="cursor:pointer; margin:13px 18px 0; position:relative; background:linear-gradient(135deg,var(--accentDk,#2a1d12),var(--card,#1A1A1A)); border:1px solid var(--line,#242424); border-radius:18px; padding:15px 16px; overflow:hidden;">
@@ -1248,6 +1225,49 @@ function glossaryView(d){
         </div>
       </div>`).join('')}
     <div style="height:96px;"></div>
+  </div>`;
+}
+
+// carte « préparation compétition » (réutilisée sur l'Accueil et l'onglet Compétition)
+function compCardHTML(d){
+  return `
+    <div style="margin:6px 18px 0; background:var(--card,#1A1A1A); border:1px solid var(--line,#242424); border-radius:18px; padding:15px 16px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div><div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent,#FF6B00);">Préparation compétition</div><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:16px; color:#fff; margin-top:2px;">${d.compEvent}</div></div>
+        <div style="text-align:right;">${d.hasComp
+          ? `<div style="font-family:'Saira',sans-serif; font-weight:800; font-size:24px; color:#fff; line-height:1;">${d.compLabel}</div><div style="font-size:10px; color:var(--accent2,#FF9A3C);">${d.phaseLabel}</div>`
+          : `<div onclick="openEditProfile()" style="cursor:pointer; display:inline-block; font-size:11px; font-weight:800; color:#160a00; background:var(--accent2,#FF9A3C); padding:6px 11px; border-radius:9px;">+ Ajouter la date</div>`}</div>
+      </div>
+      <div style="display:flex; gap:4px; margin-top:13px;">
+        ${d.phases.map(p=>`<div style="flex:${p.flex};"><div style="height:6px; border-radius:99px; background:${p.bg};"></div><div style="font-size:8.5px; color:${p.txt}; margin-top:4px; font-weight:600; text-align:center;">${p.name}</div></div>`).join('')}
+      </div>
+      ${d.session ? `
+        <div onclick="openSession()" style="cursor:pointer; margin-top:14px; display:flex; align-items:center; gap:12px; background:var(--card2,#141414); border:1px solid var(--line,#242424); border-radius:14px; padding:12px 13px;">
+          <div style="width:40px; height:40px; border-radius:11px; flex:none; background:${d.session.tagColor}22; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${d.session.tagColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div>
+          <div style="flex:1; min-width:0;">
+            <span style="font-size:9px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:${d.session.tagColor};">Séance prête · ${d.session.tag}</span>
+            <div style="font-size:14px; font-weight:700; color:#fff;">Circuit · poids du corps</div>
+            <div style="font-size:11.5px; color:#8a8a8a;">${d.session.circuit.length} exos · ${d.session.rounds} tours · ~${d.session.totalMin} min</div>
+          </div>
+          <div style="font-size:16px; color:#5a5a5a;">›</div>
+        </div>
+        <div onclick="generateSession()" style="cursor:pointer; margin-top:9px; text-align:center; padding:10px; border-radius:12px; border:1px solid var(--line,#242424); font-size:12.5px; font-weight:800; color:var(--accent2,#FF9A3C);">↻ Générer une autre séance</div>
+      ` : `
+        <div onclick="generateSession()" style="cursor:pointer; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:9px; padding:13px; border-radius:14px; background:var(--accent,#FF6B00); color:#160a00; font-size:13.5px; font-weight:800;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#160a00" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>Générer une séance (15–20 min)</div>
+      `}
+      <div style="margin-top:8px; font-size:11px; color:#7a7a7a; display:flex; gap:6px; align-items:flex-start;"><span style="color:${d.formeColor};">●</span><span>Circuit au poids du corps, intensité calée sur ta forme du jour (${d.formeLabel}).</span></div>
+    </div>`;
+}
+
+// onglet Compétition — vue dédiée à la préparation compétition
+function compView(d){
+  return `
+  <div>
+    <div style="display:flex; align-items:center; gap:12px; padding:14px 18px 4px;">
+      <div style="width:34px; height:34px; border-radius:11px; background:var(--accent,#FF6B00); display:flex; align-items:center; justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#160a00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0zM7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3"/></svg></div>
+      <div><div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--accent2,#FF9A3C);">Objectif</div><div style="font-family:'Saira',sans-serif; font-weight:700; font-size:19px; color:#fff;">Compétition</div></div>
+    </div>
+    ${compCardHTML(d)}
   </div>`;
 }
 
@@ -1564,6 +1584,7 @@ function render(){
   else if(d.isProfile) html = profileView(d);
   else if(d.isGlos) html = glossaryView(d);
   else if(d.isDojo) html = dojoView(d);
+  else if(d.isComp) html = compView(d);
   document.getElementById('view').innerHTML = html;
 
   // tab bar (theme-aware background)
