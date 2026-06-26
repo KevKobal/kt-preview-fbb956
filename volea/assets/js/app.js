@@ -170,11 +170,30 @@
     if (y) y.textContent = new Date().getFullYear();
   }
 
+  /* ---------- Photos (avec repli gracieux sur l'illustration) ---------- */
+  function initImages() {
+    const imgs = (CFG.images) || {};
+    document.querySelectorAll("[data-img]").forEach((host) => {
+      const key = host.getAttribute("data-img");
+      const url = imgs[key];
+      if (!url) return; // pas de photo -> on garde l'illustration dessinée
+      const im = new Image();
+      im.className = "photo-fill";
+      im.alt = host.getAttribute("data-img-alt") || "";
+      im.loading = "lazy";
+      im.decoding = "async";
+      im.onload = () => { host.classList.add("has-photo"); host.appendChild(im); };
+      im.onerror = () => { /* échec -> on laisse l'illustration de secours */ };
+      im.src = url;
+    });
+  }
+
   /* ---------- Expose ---------- */
   window.VOLEA = { Cart, fmt, fmt2, toast, openCart, closeCart, productIcon };
 
   document.addEventListener("DOMContentLoaded", () => {
     renderBrandNames();
     initHeader();
+    initImages();
   });
 })();

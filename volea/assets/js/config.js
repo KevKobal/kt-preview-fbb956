@@ -9,6 +9,26 @@
 window.VOLEA_CONFIG = {
 
   /* ---------------------------------------------------------------------
+     0) PHOTOS / ILLUSTRATIONS
+     ---------------------------------------------------------------------
+     👉 IDÉALEMENT : utilise TES propres photos (tes fenêtres, tes volets,
+        tes chantiers). Dépose tes images dans  volea/assets/img/  puis mets
+        le chemin ici, ex :  hero: "assets/img/ma-photo.jpg".
+
+     Par défaut, des photos d'illustration (libres de droit) sont chargées
+     depuis Internet. Si une URL ne charge pas, une belle illustration de
+     secours s'affiche automatiquement (jamais d'image cassée).
+
+     Pour revenir aux illustrations dessinées : mets la valeur à "" (vide).
+     --------------------------------------------------------------------- */
+  images: {
+    hero:    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80",
+    fenetre: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=900&q=80",
+    volet:   "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=900&q=80",
+    atouts:  "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=80",
+  },
+
+  /* ---------------------------------------------------------------------
      1) MARQUE & COORDONNÉES
      --------------------------------------------------------------------- */
   brand: {

@@ -187,8 +187,9 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; letter-spacing: -0.01e
 .hero__chip svg { width: 22px; height: 22px; color: var(--brass); }
 .hero__chip b { font-size: 14px; display: block; }
 .hero__chip span { font-size: 12px; color: var(--ink-soft); }
-.hero__chip--1 { top: 30px; left: -26px; }
-.hero__chip--2 { bottom: 38px; right: -22px; }
+.hero__chip { z-index: 4; }
+.hero__chip--1 { top: 20px; left: 20px; }
+.hero__chip--2 { bottom: 20px; right: 20px; }
 
 /* ---------- Logos strip ---------- */
 .strip { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--white); }
@@ -236,12 +237,20 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; letter-spacing: -0.01e
 /* ---------- Features split ---------- */
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
 .split__visual {
+  position: relative; overflow: hidden;
   aspect-ratio: 1/1; border-radius: 22px; background:
     radial-gradient(120% 120% at 20% 10%, rgba(176,123,79,.18), transparent 50%),
     linear-gradient(160deg, var(--sand), var(--sand-2));
   border: 1px solid var(--line); display: grid; place-items: center; box-shadow: var(--shadow);
 }
 .split__visual svg { width: 64%; height: auto; }
+
+/* ---------- Photos réelles (remplissent l'illustration, repli gracieux) ---------- */
+.photo-fill {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; z-index: 3; animation: photoIn .5s var(--ease) both;
+}
+@keyframes photoIn { from { opacity: 0; } to { opacity: 1; } }
 .featlist { display: flex; flex-direction: column; gap: 22px; margin-top: 10px; }
 .feat { display: flex; gap: 16px; }
 .feat__ic { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 11px; background: var(--ink); color: #fff; display: grid; place-items: center; }
@@ -472,7 +481,8 @@ select.inp { padding-right: 38px; -webkit-appearance: none; appearance: none;
 /* ---------- Responsive ---------- */
 @media (max-width: 940px) {
   .hero__grid { grid-template-columns: 1fr; gap: 40px; }
-  .hero__visual { max-width: 380px; margin: 0 auto; }
+  .hero__visual { width: 100%; max-width: 380px; margin: 0 auto; }
+  .glasscard { width: 100%; }
   .products, .steps, .split, .quotes, .cfg__layout, .checkout__grid, .footer__grid { grid-template-columns: 1fr; }
   .split { gap: 36px; }
   .quotes { gap: 16px; }
@@ -489,6 +499,7 @@ select.inp { padding-right: 38px; -webkit-appearance: none; appearance: none;
   .dims, .formgrid { grid-template-columns: 1fr; }
   .ctaband { padding: 44px 24px; }
   .prodswitch { grid-template-columns: 1fr; }
-  .hero__chip--1 { left: 0; } .hero__chip--2 { right: 0; }
+  .hero__chip { padding: 10px 13px; }
+  .hero__chip--1 { top: 14px; left: 14px; } .hero__chip--2 { bottom: 14px; right: 14px; }
   .header__cta .btn--ghost { display: none; }
 }
