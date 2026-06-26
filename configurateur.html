@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#15181E">
+<title>Configurateur — Voléa</title>
+<meta name="description" content="Configurez votre fenêtre ou volet roulant sur-mesure : dimensions, matériau, vitrage, motorisation. Prix en temps réel.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2315181E'/%3E%3Cpath d='M9 8h14v16H9z M16 8v16 M9 16h14' stroke='%23B07B4F' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M12 3v18M5 12h14"/></svg></span>
+      <span class="brand__name" data-brand-name></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html#produits">Produits</a>
+      <a href="index.html#etapes">Comment ça marche</a>
+      <a href="index.html#faq">FAQ</a>
+    </nav>
+    <div class="header__cta">
+      <a class="cart-link" href="#" data-cart-open>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+        Panier <span class="cart-link__badge" data-cart-badge style="display:none">0</span>
+      </a>
+      <button class="burger" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main class="cfg">
+  <div class="wrap">
+    <div class="cfg__head">
+      <span class="eyebrow">Configurateur sur-mesure</span>
+      <h1 class="display">Composez votre menuiserie</h1>
+      <p>Saisissez vos dimensions et choisissez vos options : l'aperçu et le prix s'adaptent en direct. Prix TTC, livraison comprise dès <span data-free-from></span>.</p>
+    </div>
+
+    <div class="cfg__layout">
+      <!-- ============ LEFT : configuration ============ -->
+      <div>
+        <!-- product switch -->
+        <div class="prodswitch">
+          <button type="button" class="prodswitch__btn" data-prod="fenetre">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M12 3v18M5 12h14"/></svg></span>
+            <span><b>Fenêtre</b><span>PVC · Alu · Bois</span></span>
+          </button>
+          <button type="button" class="prodswitch__btn" data-prod="volet">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M4 8h16M4 11h16M4 14h16M4 17h16"/></svg></span>
+            <span><b>Volet roulant</b><span>Manuel · Élec · Solaire</span></span>
+          </button>
+        </div>
+
+        <!-- dimensions -->
+        <div class="panel">
+          <div class="panel__title"><span class="num">1</span><h3>Vos dimensions</h3><small>en millimètres (mm)</small></div>
+          <div class="dims">
+            <div class="field">
+              <label>Largeur <span class="req">*</span></label>
+              <div class="inputwrap"><input class="inp" type="number" inputmode="numeric" id="dim_w"><span class="unit">mm</span></div>
+              <div class="hint" id="hint_w"></div>
+            </div>
+            <div class="field">
+              <label>Hauteur <span class="req">*</span></label>
+              <div class="inputwrap"><input class="inp" type="number" inputmode="numeric" id="dim_h"><span class="unit">mm</span></div>
+              <div class="hint" id="hint_h"></div>
+            </div>
+          </div>
+          <div class="notice notice--info" style="margin:18px 0 0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <span>Mesurez l'ouverture (tableau) en largeur et hauteur, et reportez la plus petite valeur. En cas de doute, nous vérifions vos cotes avant fabrication.</span>
+          </div>
+        </div>
+
+        <!-- options -->
+        <div class="panel">
+          <div class="panel__title"><span class="num">2</span><h3>Vos options</h3><small>le prix s'ajuste</small></div>
+          <div id="optionsHost"></div>
+        </div>
+
+        <!-- pose -->
+        <div class="panel">
+          <div class="panel__title"><span class="num">3</span><h3>Installation</h3></div>
+          <label class="opt" style="display:flex;width:100%;cursor:pointer;align-items:flex-start;gap:12px;padding:14px 16px">
+            <input type="checkbox" id="poseToggle" style="margin-top:3px;width:18px;height:18px;accent-color:var(--brass)">
+            <span style="font-weight:600;color:var(--ink)">Ajouter la pose par un artisan partenaire
+              <span style="display:block;font-weight:500;color:var(--ink-soft);font-size:12.5px;margin-top:3px" data-pose-note></span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- ============ RIGHT : preview + price ============ -->
+      <aside class="summary">
+        <div class="preview">
+          <div class="preview__stage" id="previewStage"></div>
+          <div class="preview__body">
+            <div class="preview__name" id="sumName"></div>
+            <div class="preview__spec" id="sumSpec"></div>
+            <div class="priceline">
+              <span class="lbl">Prix unitaire</span>
+              <span class="val" id="sumPrice"></span>
+            </div>
+            <div class="qtyrow">
+              <span>Quantité</span>
+              <div class="stepper">
+                <button type="button" id="qtyMinus" aria-label="Moins">−</button>
+                <input type="number" id="qtyInput" value="1" min="1" max="99">
+                <button type="button" id="qtyPlus" aria-label="Plus">+</button>
+              </div>
+            </div>
+            <div class="pricebreak" id="breakdown"></div>
+            <button class="btn btn--brass btn--block btn--lg" id="addBtn" style="margin-top:18px"></button>
+            <a class="btn btn--ghost btn--block" href="#" data-cart-open style="margin-top:10px">Voir mon panier</a>
+            <div class="secure-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Prix TTC · Paiement sécurisé · Garantie 10 ans
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__bottom" style="border:none;margin:0;padding:0">
+      <span>© <span data-year></span> <span data-brand-plain></span></span>
+      <span><a data-brand-email href="#"></a> · <a data-brand-phone href="#"></a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/configurateur.js"></script>
+<script>
+  // hydrate config-driven texts
+  (function () {
+    var C = window.VOLEA_CONFIG;
+    document.querySelectorAll("[data-free-from]").forEach(function (el) {
+      el.textContent = new Intl.NumberFormat("fr-FR").format(C.settings.freeShippingFrom) + " " + C.settings.currency;
+    });
+    document.querySelectorAll("[data-pose-note]").forEach(function (el) {
+      el.textContent = C.pose.note + " (+" + Math.round(C.pose.delta * 100) + "%)";
+    });
+  })();
+</script>
+</body>
+</html>
