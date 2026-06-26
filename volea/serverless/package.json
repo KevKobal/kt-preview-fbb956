@@ -1,0 +1,9 @@
+{
+  "name": "volea-stripe-checkout",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fonction serverless Stripe Checkout pour le site Voléa",
+  "dependencies": {
+    "stripe": "^14.0.0"
+  }
+}

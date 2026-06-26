@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#15181E">
+<title>Voléa — Fenêtres & volets roulants sur-mesure</title>
+<meta name="description" content="Configurez votre fenêtre ou volet roulant sur-mesure, obtenez votre prix instantanément et commandez en ligne. Fabrication française, livraison à domicile, paiement sécurisé.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2315181E'/%3E%3Cpath d='M9 8h14v16H9z M16 8v16 M9 16h14' stroke='%23B07B4F' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="header">
+  <div class="wrap header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M12 3v18M5 12h14"/></svg></span>
+      <span class="brand__name" data-brand-name></span>
+    </a>
+    <nav class="nav">
+      <a href="#produits">Produits</a>
+      <a href="#etapes">Comment ça marche</a>
+      <a href="#atouts">Nos atouts</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="header__cta">
+      <a class="cart-link" href="#" data-cart-open>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+        Panier <span class="cart-link__badge" data-cart-badge style="display:none">0</span>
+      </a>
+      <a class="btn btn--primary" href="configurateur.html">Configurer</a>
+      <button class="burger" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero__grid">
+    <div class="hero__content">
+      <span class="eyebrow">Fabrication française sur-mesure</span>
+      <h1 class="display hero__title">La fenêtre qui vous ressemble, <em>au millimètre près.</em></h1>
+      <p class="lead hero__sub">Configurez votre fenêtre ou votre volet roulant à vos dimensions exactes, obtenez votre prix en temps réel et commandez en quelques minutes. Livré chez vous, prêt à poser.</p>
+      <div class="hero__cta">
+        <a class="btn btn--brass btn--lg" href="configurateur.html">Configurer ma menuiserie
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn--ghost btn--lg" href="#etapes">Comment ça marche</a>
+      </div>
+      <div class="hero__trust">
+        <div class="t"><b>+12 000</b><span>menuiseries posées</span></div>
+        <div class="t"><b>4,8/5</b><span>satisfaction client</span></div>
+        <div class="t"><b data-lead-time></b><span>délai de fabrication</span></div>
+      </div>
+    </div>
+    <div class="hero__visual">
+      <div class="glasscard">
+        <div class="glasscard__frame">
+          <div class="glasscard__pane"></div>
+          <div class="glasscard__pane"></div>
+          <div class="glasscard__pane"></div>
+          <div class="glasscard__pane"></div>
+        </div>
+      </div>
+      <div class="hero__chip hero__chip--1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l8-4 8 4v14M9 9h.01M9 13h.01M13 9h.01M13 13h.01"/></svg>
+        <div><b>Prix immédiat</b><span>sans engagement</span></div>
+      </div>
+      <div class="hero__chip hero__chip--2">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>
+        <div><b>Paiement sécurisé</b><span>carte bancaire</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRUST STRIP ============ -->
+<div class="strip">
+  <div class="wrap strip__inner">
+    <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 10 4.6-1.5 8-5 8-10V5l-8-3Z"/></svg> Garantie 10 ans</div>
+    <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7M5.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM18.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/></svg> Livraison à domicile</div>
+    <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Paiement en plusieurs fois</div>
+    <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 14H4.5a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 6 8.6"/></svg> Fabrication sur-mesure</div>
+    <div class="strip__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg> Conseil d'experts</div>
+  </div>
+</div>
+
+<!-- ============ PRODUITS ============ -->
+<section class="section" id="produits">
+  <div class="wrap">
+    <div class="shead">
+      <span class="eyebrow">Notre gamme</span>
+      <h2 class="display">Deux produits, mille possibilités</h2>
+      <p class="lead">Chaque menuiserie est fabriquée à la commande, à vos dimensions. Choisissez le matériau, le coloris, le vitrage et la motorisation — le prix s'ajuste en direct.</p>
+    </div>
+    <div class="products">
+      <!-- FENÊTRE -->
+      <a class="pcard" href="configurateur.html?p=fenetre">
+        <div class="pcard__media">
+          <svg viewBox="0 0 480 300" preserveAspectRatio="xMidYMid slice">
+            <defs><linearGradient id="pg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eef5f6"/><stop offset="1" stop-color="#c4d6d8"/></linearGradient></defs>
+            <rect width="480" height="300" fill="url(#pg1)"/>
+            <rect x="150" y="55" width="180" height="200" rx="3" fill="#fff" stroke="#d9d3c8"/>
+            <rect x="162" y="67" width="72" height="176" fill="#dce9ea"/>
+            <rect x="246" y="67" width="72" height="176" fill="#cfe0e2"/>
+            <path d="M162 200 L210 67 L234 67 L162 243Z" fill="rgba(255,255,255,.5)"/>
+            <rect x="236" y="60" width="8" height="190" fill="#fff" stroke="#d9d3c8"/>
+            <rect x="252" y="148" width="4" height="22" rx="2" fill="#8b8f96"/>
+          </svg>
+        </div>
+        <div class="pcard__body">
+          <h3 class="display">Fenêtres sur-mesure</h3>
+          <p>PVC, aluminium ou bois. 1 ou 2 vantaux, oscillo-battant, double ou triple vitrage. Isolation thermique et phonique au plus haut niveau.</p>
+          <div class="tagrow"><span class="tag">PVC · Alu · Bois</span><span class="tag">Triple vitrage</span><span class="tag">4 coloris</span></div>
+          <div class="pcard__meta">
+            <span class="pcard__price">à partir de <b>249 €</b></span>
+            <span class="btn btn--ghost">Configurer →</span>
+          </div>
+        </div>
+      </a>
+      <!-- VOLET -->
+      <a class="pcard" href="configurateur.html?p=volet">
+        <div class="pcard__media">
+          <svg viewBox="0 0 480 300" preserveAspectRatio="xMidYMid slice">
+            <defs><linearGradient id="pg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4efe6"/><stop offset="1" stop-color="#ddd2c0"/></linearGradient></defs>
+            <rect width="480" height="300" fill="url(#pg2)"/>
+            <rect x="150" y="50" width="180" height="24" rx="3" fill="#fbfaf7" stroke="#d9d3c8"/>
+            <rect x="152" y="74" width="176" height="170" fill="#eae3d6" stroke="#d9d3c8"/>
+            <g stroke="#cfc6b5" stroke-width="1">
+              <line x1="152" y1="92" x2="328" y2="92"/><line x1="152" y1="110" x2="328" y2="110"/><line x1="152" y1="128" x2="328" y2="128"/><line x1="152" y1="146" x2="328" y2="146"/><line x1="152" y1="164" x2="328" y2="164"/><line x1="152" y1="182" x2="328" y2="182"/><line x1="152" y1="200" x2="328" y2="200"/><line x1="152" y1="218" x2="328" y2="218"/>
+            </g>
+            <rect x="148" y="74" width="6" height="170" fill="#cabfa9"/>
+            <rect x="326" y="74" width="6" height="170" fill="#cabfa9"/>
+          </svg>
+        </div>
+        <div class="pcard__body">
+          <h3 class="display">Volets roulants</h3>
+          <p>Manuel, électrique filaire, radio ou solaire sans fil. Lames aluminium isolées. Pose en rénovation, sous linteau ou bloc-baie.</p>
+          <div class="tagrow"><span class="tag">Solaire · Radio</span><span class="tag">Alu isolé</span><span class="tag">4 coloris</span></div>
+          <div class="pcard__meta">
+            <span class="pcard__price">à partir de <b>149 €</b></span>
+            <span class="btn btn--ghost">Configurer →</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ÉTAPES ============ -->
+<section class="section section--tight" id="etapes" style="background:var(--sand)">
+  <div class="wrap">
+    <div class="shead shead--center">
+      <span class="eyebrow" style="justify-content:center">Simple & transparent</span>
+      <h2 class="display">Votre commande en 3 étapes</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="step__n">Étape 01</span>
+        <div class="step__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg></div>
+        <h3 class="display">Configurez</h3>
+        <p>Saisissez vos mesures et choisissez vos options. L'aperçu et le prix se mettent à jour instantanément.</p>
+      </div>
+      <div class="step">
+        <span class="step__n">Étape 02</span>
+        <div class="step__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
+        <h3 class="display">Payez en ligne</h3>
+        <p>Réglez en toute sécurité par carte bancaire. Paiement chiffré, aucune donnée bancaire conservée.</p>
+      </div>
+      <div class="step">
+        <span class="step__n">Étape 03</span>
+        <div class="step__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M16 16h2a2 2 0 0 0 2-2V7l-4-4H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2"/><circle cx="12" cy="17" r="3"/></svg></div>
+        <h3 class="display">On fabrique & on livre</h3>
+        <p>Votre menuiserie est fabriquée à vos cotes et livrée chez vous, avec un bon de commande détaillé.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ATOUTS ============ -->
+<section class="section" id="atouts">
+  <div class="wrap split">
+    <div class="split__visual">
+      <svg viewBox="0 0 240 240" fill="none">
+        <rect x="50" y="30" width="140" height="180" rx="4" fill="#fff" stroke="#d9d3c8" stroke-width="2"/>
+        <rect x="64" y="44" width="52" height="152" fill="#dbe8ea"/>
+        <rect x="124" y="44" width="52" height="152" fill="#cadcde"/>
+        <path d="M64 160 L110 44 L130 44 L64 196Z" fill="rgba(255,255,255,.5)"/>
+        <rect x="115" y="38" width="10" height="166" fill="#fff" stroke="#d9d3c8" stroke-width="2"/>
+        <circle cx="200" cy="60" r="22" fill="#B07B4F"/>
+        <path d="M192 60l5 5 11-11" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div>
+      <span class="eyebrow">Pourquoi Voléa</span>
+      <h2 class="display" style="font-size:clamp(28px,4vw,42px);margin:16px 0 10px">Le sur-mesure, sans la complexité</h2>
+      <p class="lead" style="margin-bottom:8px">Le savoir-faire d'un menuisier, la simplicité du web. Vous gardez la main du premier clic à la pose.</p>
+      <div class="featlist">
+        <div class="feat">
+          <div class="feat__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6"/></svg></div>
+          <div><h4>Prix juste, affiché en clair</h4><p>Pas de devis à rallonge : votre tarif s'affiche en temps réel selon vos options, TTC.</p></div>
+        </div>
+        <div class="feat">
+          <div class="feat__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 10 4.6-1.5 8-5 8-10V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <div><h4>Qualité garantie 10 ans</h4><p>Profilés certifiés, vitrage à isolation renforcée, quincaillerie haut de gamme.</p></div>
+        </div>
+        <div class="feat">
+          <div class="feat__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <div><h4>Commande en quelques minutes</h4><p>Configurez, payez, c'est parti. Un conseiller reste joignable si besoin.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TÉMOIGNAGES ============ -->
+<section class="section section--tight" style="background:var(--sand)">
+  <div class="wrap">
+    <div class="shead shead--center">
+      <span class="eyebrow" style="justify-content:center">Ils nous font confiance</span>
+      <h2 class="display">4,8/5 sur la base de 1 200 avis</h2>
+    </div>
+    <div class="quotes">
+      <div class="quote">
+        <div class="quote__stars">★★★★★</div>
+        <p>« Mesures prises le matin, commande passée le soir. Les fenêtres sont arrivées pile aux cotes, finition impeccable. »</p>
+        <div class="quote__by"><span class="quote__av">SL</span><div><b>Sophie L.</b><span>Annecy</span></div></div>
+      </div>
+      <div class="quote">
+        <div class="quote__stars">★★★★★</div>
+        <p>« Le configurateur est ultra clair, on voit le prix bouger selon les options. Volets solaires posés en 1h, génial. »</p>
+        <div class="quote__by"><span class="quote__av">KM</span><div><b>Karim M.</b><span>Lyon</span></div></div>
+      </div>
+      <div class="quote">
+        <div class="quote__stars">★★★★★</div>
+        <p>« Rapport qualité-prix imbattable et le bon de commande détaillé m'a rassuré. Je recommande les yeux fermés. »</p>
+        <div class="quote__by"><span class="quote__av">FD</span><div><b>Florence D.</b><span>Grenoble</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="shead shead--center">
+      <span class="eyebrow" style="justify-content:center">Questions fréquentes</span>
+      <h2 class="display">On vous dit tout</h2>
+    </div>
+    <div class="faq">
+      <div class="faq__item">
+        <button class="faq__q">Comment prendre mes mesures correctement ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="faq__a"><p>Mesurez la largeur et la hauteur de votre ouverture (tableau) en plusieurs points et retenez la plus petite valeur, en millimètres. Un guide illustré est fourni à chaque étape, et notre équipe peut valider vos cotes avant fabrication.</p></div>
+      </div>
+      <div class="faq__item">
+        <button class="faq__q">Quel est le délai de fabrication et de livraison ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="faq__a"><p>Comptez en moyenne <span data-lead-time></span> après validation de votre commande. Vous recevez un suivi par email à chaque étape, jusqu'à la livraison à votre domicile.</p></div>
+      </div>
+      <div class="faq__item">
+        <button class="faq__q">Le paiement par carte est-il sécurisé ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="faq__a"><p>Oui. Les paiements sont traités par un prestataire bancaire certifié, en environnement chiffré. Nous ne stockons jamais vos données de carte.</p></div>
+      </div>
+      <div class="faq__item">
+        <button class="faq__q">Puis-je faire poser ma menuiserie ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="faq__a"><p>Absolument. Ajoutez l'option « pose par un artisan partenaire » lors de la configuration : un professionnel près de chez vous vous contacte pour planifier l'installation.</p></div>
+      </div>
+      <div class="faq__item">
+        <button class="faq__q">Que se passe-t-il après ma commande ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="faq__a"><p>Vous recevez immédiatement un bon de commande détaillé (PDF). Nous lançons la fabrication à vos cotes, puis organisons la livraison. Une question ? Écrivez-nous à <a data-brand-email href="#" style="color:var(--brass-d);text-decoration:underline"></a>.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA BAND ============ -->
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="ctaband">
+      <h2 class="display">Prêt à transformer votre intérieur ?</h2>
+      <p>Obtenez votre prix en moins de deux minutes. Sans engagement, sans inscription.</p>
+      <a class="btn btn--brass btn--lg" href="configurateur.html">Démarrer ma configuration
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a class="brand" href="index.html" style="margin-bottom:14px">
+          <span class="brand__mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M12 3v18M5 12h14"/></svg></span>
+          <span class="brand__name" data-brand-name></span>
+        </a>
+        <p data-brand-tagline></p>
+        <p style="margin-top:10px"><a data-brand-email href="#"></a><br><a data-brand-phone href="#"></a></p>
+      </div>
+      <div>
+        <h5>Produits</h5>
+        <ul>
+          <li><a href="configurateur.html?p=fenetre">Fenêtres</a></li>
+          <li><a href="configurateur.html?p=volet">Volets roulants</a></li>
+          <li><a href="configurateur.html">Configurateur</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Aide</h5>
+        <ul>
+          <li><a href="#etapes">Comment ça marche</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a data-brand-email href="#">Nous contacter</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Société</h5>
+        <ul>
+          <li><a href="#atouts">Nos atouts</a></li>
+          <li><a data-brand-address href="#"></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year></span> <span data-brand-plain></span> — Tous droits réservés.</span>
+      <span>Paiement sécurisé · Garantie 10 ans · Fabrication française</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+  // FAQ accordion
+  document.querySelectorAll(".faq__q").forEach((q) => {
+    q.addEventListener("click", () => {
+      const item = q.closest(".faq__item");
+      const a = item.querySelector(".faq__a");
+      const open = item.classList.toggle("open");
+      a.style.maxHeight = open ? a.scrollHeight + "px" : 0;
+    });
+  });
+</script>
+</body>
+</html>
